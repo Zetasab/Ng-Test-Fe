@@ -1,0 +1,48 @@
+# =========================
+# Node
+# =========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# =========================
+# Angular build
+# =========================
+dist/
+out-tsc/
+coverage/
+
+# =========================
+# IDE / Editor
+# =========================
+.vscode/
+*.code-workspace
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# =========================
+# Environment
+# =========================
+.env
+.env.*
+src/environments/*.local.ts
+src/environments/*.dev.ts
+src/environments/*.prod.ts
+
+# =========================
+# OS
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Angular temporary / cache
+# =========================
+.angular/cache/
+.angular/build/
