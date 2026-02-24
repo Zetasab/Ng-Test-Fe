@@ -1,1 +1,175 @@
-<p>tag-page works!</p>
+<section class="tag-page">
+	<p-table
+		#dt
+		class="tag-grid"
+		dataKey="id"
+		[value]="tags()"
+		[loading]="isGridLoading()"
+		[paginator]="true"
+		[rows]="10"
+		[rowsPerPageOptions]="[5, 10, 20]"
+		[globalFilterFields]="['name']"
+		[tableStyle]="{ 'min-width': '46rem' }"
+	>
+		<ng-template #caption>
+			<div class="table-caption">
+				<div class="caption-left">
+					<span class="p-input-icon-left">
+						<i class="pi pi-search" aria-hidden="true"></i>
+						<input
+							pInputText
+							type="text"
+							placeholder="Buscar por nombre"
+							(input)="onGlobalFilter(dt, $event)"
+							aria-label="Buscar tags"
+						/>
+					</span>
+				</div>
+
+				<button
+					pButton
+					type="button"
+					icon="pi pi-plus"
+					label="Añadir"
+					(click)="openCreateDialog()"
+				></button>
+			</div>
+		</ng-template>
+
+		<ng-template #header>
+			<tr>
+				<th pSortableColumn="name">
+					Nombre
+					<p-sortIcon field="name"></p-sortIcon>
+					<p-columnFilter
+						type="text"
+						field="name"
+						display="menu"
+						matchMode="contains"
+						[showOperator]="false"
+						[showMatchModes]="false"
+						[showAddButton]="false"
+						[showApplyButton]="false"
+						[showClearButton]="true"
+						placeholder="Filtrar"
+					></p-columnFilter>
+				</th>
+				<th class="actions-col">Acciones</th>
+			</tr>
+		</ng-template>
+
+		<ng-template #body let-tag let-rowIndex="rowIndex">
+			<tr>
+				<td>{{ tag.name }}</td>
+				<td class="actions-cell">
+					<button
+						pButton
+						type="button"
+						icon="pi pi-pencil"
+						[text]="true"
+						[rounded]="true"
+						aria-label="Editar tag"
+						(click)="openEditDialog(tag)"
+					></button>
+					<button
+						pButton
+						type="button"
+						icon="pi pi-trash"
+						severity="danger"
+						[text]="true"
+						[rounded]="true"
+						aria-label="Borrar tag"
+						(click)="openDeleteDialog(tag)"
+					></button>
+				</td>
+			</tr>
+		</ng-template>
+
+		<ng-template #emptymessage>
+			<tr>
+				<td colspan="2" class="empty-message">No hay tags disponibles.</td>
+			</tr>
+		</ng-template>
+	</p-table>
+</section>
+
+<p-dialog
+	[visible]="isTagDialogVisible()"
+	[modal]="true"
+	[draggable]="false"
+	[resizable]="false"
+	[dismissableMask]="!isSavePending()"
+	[closeOnEscape]="!isSavePending()"
+	[closable]="!isSavePending()"
+	[style]="{ width: '28rem' }"
+	[header]="tagDialogTitle()"
+	(onHide)="closeTagDialog()"
+>
+	<form class="tag-form" [formGroup]="tagForm" (ngSubmit)="submitTag()">
+		<label for="tagName">Nombre</label>
+		<input id="tagName" pInputText formControlName="name" maxlength="120" />
+
+		@if (tagForm.controls.name.invalid && (tagForm.controls.name.touched || tagForm.controls.name.dirty)) {
+			<small class="field-error">El nombre es obligatorio.</small>
+		}
+
+		<div class="dialog-actions">
+			<button
+				pButton
+				type="button"
+				label="Cancelar"
+				[text]="true"
+				(click)="closeTagDialog()"
+				[disabled]="isSavePending()"
+			></button>
+
+			<app-ladda-response-button
+				type="submit"
+				[state]="saveButtonState()"
+				[label]="isEditMode() ? 'Guardar cambios' : 'Crear tag'"
+				[loadingLabel]="isEditMode() ? 'Guardando...' : 'Creando...'"
+				[correctLabel]="isEditMode() ? 'Actualizado' : 'Creado'"
+				[wrongLabel]="'Error al guardar'"
+			></app-ladda-response-button>
+		</div>
+	</form>
+</p-dialog>
+
+<p-dialog
+	[visible]="isDeleteDialogVisible()"
+	header="Confirmar borrado"
+	[modal]="true"
+	[draggable]="false"
+	[resizable]="false"
+	[dismissableMask]="!isDeletePending()"
+	[closeOnEscape]="!isDeletePending()"
+	[closable]="!isDeletePending()"
+	[style]="{ width: '28rem' }"
+	(onHide)="closeDeleteDialog()"
+>
+	<p class="confirm-message">
+		¿Seguro que quieres borrar el tag
+		<strong>{{ deletingTag()?.name }}</strong>
+		?
+	</p>
+
+	<div class="dialog-actions">
+		<button
+			pButton
+			type="button"
+			label="Cancelar"
+			[text]="true"
+			(click)="closeDeleteDialog()"
+			[disabled]="isDeletePending()"
+		></button>
+
+		<app-ladda-response-button
+			[state]="deleteButtonState()"
+			label="Borrar"
+			loadingLabel="Borrando..."
+			correctLabel="Borrado"
+			wrongLabel="Error al borrar"
+			(pressed)="confirmDelete()"
+		></app-ladda-response-button>
+	</div>
+</p-dialog>

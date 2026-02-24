@@ -32,9 +32,42 @@ export const adminGuard: CanActivateFn = () => {
     return router.createUrlTree(['/login']);
   }
 
-  if (user.role === UserRole.Admin) {
+  if (isAdminUser(user)) {
     return true;
   }
 
   return router.createUrlTree(['/']);
 };
+
+function isAdminUser(user: UserResponse): boolean {
+  const userWithFlexibleRole = user as UserResponse & {
+    roleId?: unknown;
+    userRole?: unknown;
+  };
+
+  const candidates = [user.role, userWithFlexibleRole.roleId, userWithFlexibleRole.userRole];
+
+  return candidates.some((candidate) => isAdminRoleValue(candidate));
+}
+
+function isAdminRoleValue(role: unknown): boolean {
+  if (typeof role === 'number') {
+    return role === 1;
+  }
+
+  if (typeof role === 'string') {
+    const normalizedRole = role.trim().toLowerCase();
+    return normalizedRole === UserRole.Admin.toLowerCase() || normalizedRole === '1';
+  }
+
+  if (isObjectLike(role)) {
+    const roleRecord = role as Record<string, unknown>;
+    return isAdminRoleValue(roleRecord['id']) || isAdminRoleValue(roleRecord['name']);
+  }
+
+  return false;
+}
+
+function isObjectLike(value: unknown): value is object {
+  return typeof value === 'object' && value !== null;
+}

@@ -6,10 +6,15 @@
 
 :host aside {
   height: 100%;
+  padding: 0.5rem;
 }
 
 :host ::ng-deep .app-sidebar-menu {
   width: 100%;
   height: 100%;
   overflow-y: auto;
+}
+
+:host ::ng-deep .app-sidebar-menu .p-panelmenu-panel {
+  margin-bottom: 0.25rem;
 }

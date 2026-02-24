@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { MenuItem } from 'primeng/api';
-import { MenuModule } from 'primeng/menu';
+import { PanelMenuModule } from 'primeng/panelmenu';
 
 @Component({
   selector: 'app-sidebar',
-  imports: [MenuModule, RouterModule],
+  imports: [PanelMenuModule, RouterModule],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -13,19 +13,51 @@ import { MenuModule } from 'primeng/menu';
 export class Sidebar {
   protected readonly items: MenuItem[] = [
     {
-      label: 'Inicio',
+      label: 'Home',
       icon: 'pi pi-home',
       routerLink: '/',
     },
     {
-      label: 'Tags',
-      icon: 'pi pi-tags',
-      routerLink: '/',
-    },
-    {
-      label: 'Perfil',
-      icon: 'pi pi-user',
-      routerLink: '/login',
+      label: 'Games',
+      icon: 'pi pi-th-large',
+      expanded: true,
+      items: [
+        {
+          label: 'Developer',
+          icon: 'pi pi-code',
+          routerLink: '/games/developer',
+        },
+        {
+          label: 'Game',
+          icon: 'pi pi-play-circle',
+          routerLink: '/games/game',
+        },
+        {
+          label: 'Game Search',
+          icon: 'pi pi-search',
+          routerLink: '/games/gamesearch',
+        },
+        {
+          label: 'Genre',
+          icon: 'pi pi-sitemap',
+          routerLink: '/games/genre',
+        },
+        {
+          label: 'Platform',
+          icon: 'pi pi-desktop',
+          routerLink: '/games/platform',
+        },
+        {
+          label: 'Review',
+          icon: 'pi pi-comment',
+          routerLink: '/games/review',
+        },
+        {
+          label: 'Tag',
+          icon: 'pi pi-tags',
+          routerLink: '/games/tag',
+        },
+      ],
     },
   ];
 }

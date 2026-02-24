@@ -1,7 +1,9 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { catchError, map, Observable, throwError } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { USER_SESSION_KEY } from '../shared/auth.guard';
+import { UserResponse } from '../../models/user-response.model';
 
 @Injectable({
   providedIn: 'root',
@@ -11,35 +13,37 @@ export class BaseService {
   private readonly apiBaseUrl = environment.apiBaseUrl.replace(/\/+$/, '');
 
   protected httpGet<T>(url: string): Observable<T> {
-    return this.httpClient.get<T>(url, { observe: 'response' }).pipe(
+    return this.httpClient.get<T>(url, { observe: 'response', headers: this.buildAuthHeaders() }).pipe(
       map((response) => this.extractBody(response, 'GET', url)),
       catchError((error) => this.handleHttpError(error, 'GET', url)),
     );
   }
 
   protected httpGetText(url: string): Observable<string> {
-    return this.httpClient.get(url, { observe: 'response', responseType: 'text' }).pipe(
+    return this.httpClient
+      .get(url, { observe: 'response', responseType: 'text', headers: this.buildAuthHeaders() })
+      .pipe(
       map((response) => this.extractTextBody(response, 'GET', url)),
       catchError((error) => this.handleHttpError(error, 'GET', url)),
     );
   }
 
   protected httpPost<TResponse>(url: string, body: unknown): Observable<TResponse> {
-    return this.httpClient.post<TResponse>(url, body, { observe: 'response' }).pipe(
+    return this.httpClient.post<TResponse>(url, body, { observe: 'response', headers: this.buildAuthHeaders() }).pipe(
       map((response) => this.extractBody(response, 'POST', url)),
       catchError((error) => this.handleHttpError(error, 'POST', url)),
     );
   }
 
   protected httpPut<TBody>(url: string, body: TBody): Observable<void> {
-    return this.httpClient.put<void>(url, body, { observe: 'response' }).pipe(
+    return this.httpClient.put<void>(url, body, { observe: 'response', headers: this.buildAuthHeaders() }).pipe(
       map((response) => this.extractBody(response, 'PUT', url)),
       catchError((error) => this.handleHttpError(error, 'PUT', url)),
     );
   }
 
   protected httpDelete(url: string): Observable<void> {
-    return this.httpClient.delete<void>(url, { observe: 'response' }).pipe(
+    return this.httpClient.delete<void>(url, { observe: 'response', headers: this.buildAuthHeaders() }).pipe(
       map((response) => this.extractBody(response, 'DELETE', url)),
       catchError((error) => this.handleHttpError(error, 'DELETE', url)),
     );
@@ -71,6 +75,34 @@ export class BaseService {
   private logIfNot200(status: number, method: string, url: string): void {
     if (status !== 200) {
       console.error(`[HTTP ${method}] ${url} returned status ${status}`);
+    }
+  }
+
+  private buildAuthHeaders(): HttpHeaders {
+    const token = this.getSessionToken();
+
+    if (!token) {
+      return new HttpHeaders();
+    }
+
+    return new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+  }
+
+  private getSessionToken(): string | null {
+    const rawUser = sessionStorage.getItem(USER_SESSION_KEY);
+
+    if (!rawUser) {
+      return null;
+    }
+
+    try {
+      const user = JSON.parse(rawUser) as UserResponse;
+      const token = user.token?.trim();
+      return token ? token : null;
+    } catch {
+      return null;
     }
   }
 }
