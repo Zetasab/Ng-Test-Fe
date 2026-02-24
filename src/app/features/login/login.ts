@@ -12,6 +12,7 @@ import { AUTH_SESSION_KEY, USER_SESSION_KEY } from '../../shared/auth.guard';
 import { ThemeService } from '../../shared/theme.service';
 import { AuthService } from '../../services/auth.service';
 import { InfoService } from '../../services/info.service';
+import { LaddaResponseButton, type LaddaResponseState } from '../../components/ladda-response-button/ladda-response-button';
 
 @Component({
   selector: 'app-login',
@@ -22,6 +23,7 @@ import { InfoService } from '../../services/info.service';
     PasswordModule,
     ButtonModule,
     MessageModule,
+    LaddaResponseButton,
   ],
   templateUrl: './login.html',
   styleUrl: './login.css',
@@ -30,6 +32,7 @@ import { InfoService } from '../../services/info.service';
 export class Login {
   private static readonly REMEMBER_USER_KEY = 'rememberUser';
   private static readonly REMEMBER_PASSWORD_KEY = 'rememberPassword';
+  private static readonly BUTTON_FEEDBACK_DELAY_MS = 500;
 
   private readonly formBuilder = inject(FormBuilder);
   private readonly router = inject(Router);
@@ -38,6 +41,7 @@ export class Login {
   private readonly infoService = inject(InfoService);
   protected readonly submitted = signal(false);
   protected readonly invalidCredentials = signal(false);
+  protected readonly loginButtonState = signal<LaddaResponseState>('idle');
   protected readonly isDarkMode = this.themeService.isDarkMode;
 
   protected readonly loginForm = this.formBuilder.nonNullable.group({
@@ -67,11 +71,17 @@ export class Login {
   protected async onSubmit(): Promise<void> {
     this.submitted.set(true);
     this.invalidCredentials.set(false);
+    this.loginButtonState.set('idle');
 
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
+      this.loginButtonState.set('wrong');
+      await this.waitButtonFeedback();
+      this.loginButtonState.set('idle');
       return;
     }
+
+    this.loginButtonState.set('loading');
 
     const credentials = this.loginForm.getRawValue();
 
@@ -95,15 +105,29 @@ export class Login {
 
       sessionStorage.setItem(USER_SESSION_KEY, JSON.stringify(userResponse));
       sessionStorage.setItem(AUTH_SESSION_KEY, 'true');
+      this.loginButtonState.set('correct');
+      await this.waitButtonFeedback();
       await this.router.navigateByUrl('/');
     } catch (error: unknown) {
       if (error instanceof HttpErrorResponse && error.status === 401) {
         this.invalidCredentials.set(true);
+        this.loginButtonState.set('wrong');
+        await this.waitButtonFeedback();
+        this.loginButtonState.set('idle');
         return;
       }
 
       this.invalidCredentials.set(true);
+      this.loginButtonState.set('wrong');
+      await this.waitButtonFeedback();
+      this.loginButtonState.set('idle');
     }
+  }
+
+  private async waitButtonFeedback(): Promise<void> {
+    await new Promise<void>((resolve) => {
+      window.setTimeout(resolve, Login.BUTTON_FEEDBACK_DELAY_MS);
+    });
   }
 
   protected toggleTheme(): void {

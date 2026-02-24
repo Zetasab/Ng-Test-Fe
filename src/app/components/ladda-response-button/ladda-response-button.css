@@ -1,0 +1,102 @@
+:host {
+  display: inline-block;
+}
+
+.ladda-response-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 12rem;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border: 0;
+  border-radius: 0.625rem;
+  font: inherit;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--p-primary-contrast-color, #fff);
+  background: var(--p-primary-color, #3b82f6);
+  transition: background-color 280ms ease, transform 220ms ease, box-shadow 220ms ease, filter 220ms ease;
+}
+
+.ladda-response-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: var(--p-overlay-modal-shadow, 0 0.75rem 1.5rem rgba(0, 0, 0, 0.2));
+}
+
+.ladda-response-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.ladda-response-button:focus-visible {
+  outline: 2px solid var(--p-primary-color, #3b82f6);
+  outline-offset: 2px;
+}
+
+.ladda-response-button.is-loading {
+  cursor: wait;
+  filter: saturate(1.05);
+}
+
+.ladda-response-button.is-correct {
+  background: var(--p-green-500, #22c55e);
+  color: var(--p-primary-contrast-color, #fff);
+}
+
+.ladda-response-button.is-wrong {
+  background: var(--p-red-500, #ef4444);
+  color: var(--p-primary-contrast-color, #fff);
+}
+
+.ladda-response-button:disabled {
+  opacity: 0.85;
+}
+
+.ladda-response-button.full-width {
+  width: 100%;
+}
+
+.button-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1.15rem;
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+
+.ladda-response-button.is-correct .button-label,
+.ladda-response-button.is-wrong .button-label {
+  transform: translateX(-0.35rem);
+}
+
+.feedback-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  font-size: 1.05rem;
+  font-weight: 800;
+  border-radius: 999rem;
+  background: color-mix(in srgb, currentColor 16%, transparent);
+  animation: feedback-pulse 320ms ease-out;
+}
+
+@keyframes feedback-pulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.1;
+  }
+
+  70% {
+    transform: scale(1.12);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

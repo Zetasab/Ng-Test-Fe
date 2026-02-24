@@ -36,6 +36,8 @@
     "@omnedia/ngx-three-globe": "^4.1.0",
     "@omnedia/ngx-typewriter": "^4.0.1",
     "@primeuix/themes": "^2.0.3",
+    "angular2-ladda": "^5.0.0",
+    "ladda": "^2.0.3",
     "primeicons": "^7.0.0",
     "primeng": "^21.1.1",
     "rxjs": "~7.8.0",

@@ -1,0 +1,26 @@
+<button
+  pRipple
+  class="ladda-response-button"
+  [class.is-loading]="isLoading()"
+  [class.is-correct]="isCorrect()"
+  [class.is-wrong]="isWrong()"
+  [class.full-width]="fullWidth()"
+  [disabled]="isButtonDisabled()"
+  [attr.aria-busy]="isLoading()"
+  [attr.data-style]="'zoom-out'"
+  [ladda]="isLoading()"
+  [type]="type()"
+  (click)="onPressed($event)"
+>
+  <span class="button-label">{{ currentLabel() }}</span>
+
+  @if (feedbackState() !== 'none') {
+    <span
+      class="feedback-icon"
+      [@feedbackIcon]="feedbackState()"
+      aria-hidden="true"
+    >
+      {{ feedbackState() === 'correct' ? '✓' : '✕' }}
+    </span>
+  }
+</button>
