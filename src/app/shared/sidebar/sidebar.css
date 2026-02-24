@@ -13,8 +13,20 @@
   width: 100%;
   height: 100%;
   overflow-y: auto;
+  background: var(--p-toolbar-background);
+  border: none;
 }
 
 :host ::ng-deep .app-sidebar-menu .p-panelmenu-panel {
   margin-bottom: 0.25rem;
+  background: var(--p-toolbar-background);
+  border: none;
+}
+
+:host ::ng-deep .app-sidebar-menu .p-panelmenu-header,
+:host ::ng-deep .app-sidebar-menu .p-panelmenu-content,
+:host ::ng-deep .app-sidebar-menu .p-panelmenu-item-content,
+:host ::ng-deep .app-sidebar-menu .p-panelmenu-item-link {
+  background: var(--p-toolbar-background);
+  border: none;
 }

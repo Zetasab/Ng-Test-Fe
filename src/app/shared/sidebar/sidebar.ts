@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { PanelMenuModule } from 'primeng/panelmenu';
+import { canDisplayRouteLink } from '../route-access.util';
 
 @Component({
   selector: 'app-sidebar',
@@ -11,7 +12,7 @@ import { PanelMenuModule } from 'primeng/panelmenu';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Sidebar {
-  protected readonly items: MenuItem[] = [
+  protected readonly items: MenuItem[] = this.filterMenuItems([
     {
       label: 'Home',
       icon: 'pi pi-home',
@@ -64,5 +65,42 @@ export class Sidebar {
       icon: 'pi pi-users',
       routerLink: '/users',
     },
-  ];
+  ]);
+
+  private filterMenuItems(items: readonly MenuItem[]): MenuItem[] {
+    return items
+      .map((item) => this.mapAllowedMenuItem(item))
+      .filter((item): item is MenuItem => item !== null);
+  }
+
+  private mapAllowedMenuItem(item: MenuItem): MenuItem | null {
+    const filteredChildren = item.items ? this.filterMenuItems(item.items) : undefined;
+    const routePath = this.resolveRoutePath(item.routerLink);
+    const hasRouteAccess = routePath ? canDisplayRouteLink(routePath) : true;
+
+    if (!hasRouteAccess) {
+      return null;
+    }
+
+    if (item.items && (!filteredChildren || filteredChildren.length === 0) && !routePath) {
+      return null;
+    }
+
+    return {
+      ...item,
+      items: filteredChildren,
+    };
+  }
+
+  private resolveRoutePath(routerLink: MenuItem['routerLink']): string | null {
+    if (typeof routerLink === 'string') {
+      return routerLink;
+    }
+
+    if (Array.isArray(routerLink)) {
+      return routerLink.join('/');
+    }
+
+    return null;
+  }
 }

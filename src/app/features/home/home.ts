@@ -4,6 +4,7 @@ import { NgxNumberTickerComponent } from '@omnedia/ngx-number-ticker';
 import { NgxParticlesComponent } from '@omnedia/ngx-particles';
 import { NgxThreeGlobeComponent } from '@omnedia/ngx-three-globe/browser';
 import { NgxTypewriterComponent } from '@omnedia/ngx-typewriter';
+import { canDisplayRouteLink } from '../../shared/route-access.util';
 
 type TestCard = {
   id: number;
@@ -60,7 +61,7 @@ export class Home {
     'Test Compartir Reporte',
   ]);
 
-  protected readonly featureGroups = signal<FeatureGroup[]>([
+  protected readonly featureGroups = signal<FeatureGroup[]>(this.buildAllowedFeatureGroups([
     {
       folder: 'home',
       pages: [{ label: 'Home', path: '/' }],
@@ -77,7 +78,7 @@ export class Home {
         { label: 'Tag Page', path: '/games/tag' },
       ],
     },
-  ]);
+  ]));
 
   protected readonly formatMetric = (value: number): string => Math.round(value).toLocaleString('es-ES');
 
@@ -131,5 +132,14 @@ export class Home {
 
   private randomInt(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  private buildAllowedFeatureGroups(groups: readonly FeatureGroup[]): FeatureGroup[] {
+    return groups
+      .map((group) => ({
+        ...group,
+        pages: group.pages.filter((page) => canDisplayRouteLink(page.path)),
+      }))
+      .filter((group) => group.pages.length > 0);
   }
 }

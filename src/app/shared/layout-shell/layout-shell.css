@@ -22,7 +22,8 @@
   bottom: var(--layout-gap);
   width: var(--sidebar-width);
   overflow: hidden;
-  background: var(--p-surface-0);
+  background: var(--p-toolbar-background);
+  border: none;
   border-radius: 0.75rem;
   z-index: 1000;
   transition: width 220ms ease, opacity 220ms ease;
