@@ -49,6 +49,11 @@ export const routes: Routes = [
 				canActivate: [adminGuard],
 				loadComponent: () => import('./features/games/tag-page/tag-page').then((m) => m.TagPage),
 			},
+			{
+				path: 'users',
+				canActivate: [adminGuard],
+				loadComponent: () => import('./features/users/user-page/user-page').then((m) => m.UserPage),
+			},
 		],
 	},
 	{

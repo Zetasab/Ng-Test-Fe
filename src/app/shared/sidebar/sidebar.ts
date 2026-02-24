@@ -59,5 +59,10 @@ export class Sidebar {
         },
       ],
     },
+    {
+      label: 'Users',
+      icon: 'pi pi-users',
+      routerLink: '/users',
+    },
   ];
 }

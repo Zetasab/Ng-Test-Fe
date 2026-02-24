@@ -1,0 +1,226 @@
+<section class="user-page">
+  <p-table
+    #dt
+    class="user-grid"
+    dataKey="id"
+    [value]="users()"
+    [loading]="isGridLoading()"
+    [paginator]="true"
+    [rows]="10"
+    [rowsPerPageOptions]="[5, 10, 20]"
+    [globalFilterFields]="['username', 'role', 'isActive']"
+    [tableStyle]="{ 'min-width': '70rem' }"
+  >
+    <ng-template #caption>
+      <div class="table-caption">
+        <div class="caption-left">
+          <span class="p-input-icon-left">
+            <i class="pi pi-search" aria-hidden="true"></i>
+            <input
+              pInputText
+              type="text"
+              placeholder="Buscar user"
+              (input)="onGlobalFilter(dt, $event)"
+              aria-label="Buscar users"
+            />
+          </span>
+        </div>
+
+        <button
+          pButton
+          type="button"
+          icon="pi pi-plus"
+          label="Añadir"
+          (click)="openCreateDialog()"
+        ></button>
+      </div>
+    </ng-template>
+
+    <ng-template #header>
+      <tr>
+        <th pSortableColumn="username">
+          Username
+          <p-sortIcon field="username"></p-sortIcon>
+          <p-columnFilter
+            type="text"
+            field="username"
+            display="menu"
+            matchMode="contains"
+            [showOperator]="false"
+            [showMatchModes]="false"
+            [showAddButton]="false"
+            [showApplyButton]="false"
+            [showClearButton]="true"
+            placeholder="Filtrar"
+          ></p-columnFilter>
+        </th>
+        <th pSortableColumn="role">
+          Role
+          <p-sortIcon field="role"></p-sortIcon>
+          <p-columnFilter
+            type="text"
+            field="role"
+            display="menu"
+            matchMode="contains"
+            [showOperator]="false"
+            [showMatchModes]="false"
+            [showAddButton]="false"
+            [showApplyButton]="false"
+            [showClearButton]="true"
+            placeholder="Filtrar"
+          ></p-columnFilter>
+        </th>
+        <th pSortableColumn="isActive">
+          Activo
+          <p-sortIcon field="isActive"></p-sortIcon>
+        </th>
+        <th>PasswordHash</th>
+        <th>Token</th>
+        <th class="actions-col">Acciones</th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-user>
+      <tr>
+        <td>{{ user.username }}</td>
+        <td>{{ getRoleLabel(user.role) }}</td>
+        <td>{{ user.isActive ? 'Sí' : 'No' }}</td>
+        <td>{{ user.passwordHash || '-' }}</td>
+        <td>{{ user.token || '-' }}</td>
+        <td class="actions-cell">
+          <button
+            pButton
+            type="button"
+            icon="pi pi-pencil"
+            [text]="true"
+            [rounded]="true"
+            aria-label="Editar user"
+            (click)="openEditDialog(user)"
+          ></button>
+          <button
+            pButton
+            type="button"
+            icon="pi pi-trash"
+            severity="danger"
+            [text]="true"
+            [rounded]="true"
+            aria-label="Borrar user"
+            (click)="openDeleteDialog(user)"
+          ></button>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="6" class="empty-message">No hay users disponibles.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</section>
+
+<p-dialog
+  [visible]="isUserDialogVisible()"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="!isSavePending()"
+  [closeOnEscape]="!isSavePending()"
+  [closable]="!isSavePending()"
+  [style]="{ width: '36rem' }"
+  [header]="userDialogTitle()"
+  (onHide)="closeUserDialog()"
+>
+  <form class="user-form" [formGroup]="userForm" (ngSubmit)="submitUser()">
+    <label for="userUsername">Username</label>
+    <input id="userUsername" pInputText formControlName="username" maxlength="120" />
+
+    @if (userForm.controls.username.invalid && (userForm.controls.username.touched || userForm.controls.username.dirty)) {
+      <small class="field-error">El username es obligatorio.</small>
+    }
+
+    <label for="userPasswordHash">PasswordHash</label>
+    <input id="userPasswordHash" pInputText formControlName="passwordHash" maxlength="255" />
+
+    @if (userForm.controls.passwordHash.invalid && (userForm.controls.passwordHash.touched || userForm.controls.passwordHash.dirty)) {
+      <small class="field-error">El password hash es obligatorio.</small>
+    }
+
+    <label for="userToken">Token</label>
+    <input id="userToken" pInputText formControlName="token" maxlength="500" />
+
+    <label for="userRole">Role</label>
+    <p-select
+      inputId="userRole"
+      formControlName="role"
+      [options]="roleOptions"
+      optionLabel="label"
+      optionValue="value"
+      appendTo="body"
+    ></p-select>
+
+    <label class="is-active-check" for="userIsActive">
+      <input id="userIsActive" type="checkbox" formControlName="isActive" />
+      <span>IsActive</span>
+    </label>
+
+    <div class="dialog-actions">
+      <button
+        pButton
+        type="button"
+        label="Cancelar"
+        [text]="true"
+        (click)="closeUserDialog()"
+        [disabled]="isSavePending()"
+      ></button>
+
+      <app-ladda-response-button
+        type="submit"
+        [state]="saveButtonState()"
+        [label]="isEditMode() ? 'Guardar cambios' : 'Crear user'"
+        [loadingLabel]="isEditMode() ? 'Guardando...' : 'Creando...'"
+        [correctLabel]="isEditMode() ? 'Actualizado' : 'Creado'"
+        [wrongLabel]="'Error al guardar'"
+      ></app-ladda-response-button>
+    </div>
+  </form>
+</p-dialog>
+
+<p-dialog
+  [visible]="isDeleteDialogVisible()"
+  header="Confirmar borrado"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="!isDeletePending()"
+  [closeOnEscape]="!isDeletePending()"
+  [closable]="!isDeletePending()"
+  [style]="{ width: '28rem' }"
+  (onHide)="closeDeleteDialog()"
+>
+  <p class="confirm-message">
+    ¿Seguro que quieres borrar el user
+    <strong>{{ deletingUser()?.username }}</strong>
+    ?
+  </p>
+
+  <div class="dialog-actions">
+    <button
+      pButton
+      type="button"
+      label="Cancelar"
+      [text]="true"
+      (click)="closeDeleteDialog()"
+      [disabled]="isDeletePending()"
+    ></button>
+
+    <app-ladda-response-button
+      [state]="deleteButtonState()"
+      label="Borrar"
+      loadingLabel="Borrando..."
+      correctLabel="Borrado"
+      wrongLabel="Error al borrar"
+      (pressed)="confirmDelete()"
+    ></app-ladda-response-button>
+  </div>
+</p-dialog>
