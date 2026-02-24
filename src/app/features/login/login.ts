@@ -28,6 +28,9 @@ import { InfoService } from '../../services/info.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Login {
+  private static readonly REMEMBER_USER_KEY = 'rememberUser';
+  private static readonly REMEMBER_PASSWORD_KEY = 'rememberPassword';
+
   private readonly formBuilder = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly themeService = inject(ThemeService);
@@ -40,12 +43,24 @@ export class Login {
   protected readonly loginForm = this.formBuilder.nonNullable.group({
     username: ['', [Validators.required]],
     password: ['', [Validators.required]],
+    rememberUser: false,
   });
 
   public ngOnInit(): void {
     const isAuthenticated = sessionStorage.getItem(AUTH_SESSION_KEY) === 'true';
     if (isAuthenticated) {
       void this.router.navigateByUrl('/');
+      return;
+    }
+
+    const rememberedUsername = localStorage.getItem(Login.REMEMBER_USER_KEY);
+    const rememberedPassword = localStorage.getItem(Login.REMEMBER_PASSWORD_KEY);
+    if (rememberedUsername !== null && rememberedPassword !== null) {
+      this.loginForm.patchValue({
+        username: rememberedUsername,
+        password: rememberedPassword,
+        rememberUser: true,
+      });
     }
   }
 
@@ -69,6 +84,15 @@ export class Login {
 
     try {
       const userResponse = await firstValueFrom(this.authService.login(credentials));
+
+      if (credentials.rememberUser) {
+        localStorage.setItem(Login.REMEMBER_USER_KEY, credentials.username);
+        localStorage.setItem(Login.REMEMBER_PASSWORD_KEY, credentials.password);
+      } else {
+        localStorage.removeItem(Login.REMEMBER_USER_KEY);
+        localStorage.removeItem(Login.REMEMBER_PASSWORD_KEY);
+      }
+
       sessionStorage.setItem(USER_SESSION_KEY, JSON.stringify(userResponse));
       sessionStorage.setItem(AUTH_SESSION_KEY, 'true');
       await this.router.navigateByUrl('/');

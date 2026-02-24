@@ -90,3 +90,14 @@ input[pInputText] {
 :host ::ng-deep .login-card {
 	width: min(92vw, 32rem);
 }
+
+.remember-check {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	font-size: 0.95rem;
+}
+
+.remember-check input {
+	margin: 0;
+}
