@@ -2,8 +2,9 @@ import { Injectable, signal } from '@angular/core';
 
 export type AppTheme = 'light' | 'dark';
 
-const THEME_STORAGE_KEY = 'app-theme';
+const THEME_STORAGE_KEY = 'theme';
 const DARK_THEME_CLASS = 'app-dark';
+const LIGHT_THEME_CLASS = 'app-light';
 
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
@@ -26,17 +27,35 @@ export class ThemeService {
   private applyTheme(theme: AppTheme): void {
     this.currentTheme.set(theme);
     this.isDarkMode.set(theme === 'dark');
-    localStorage.setItem(THEME_STORAGE_KEY, theme);
+    localStorage.setItem(
+      THEME_STORAGE_KEY,
+      theme === 'dark' ? DARK_THEME_CLASS : LIGHT_THEME_CLASS,
+    );
 
     const root = document.documentElement;
+    root.classList.toggle(LIGHT_THEME_CLASS, theme === 'light');
     root.classList.toggle(DARK_THEME_CLASS, theme === 'dark');
   }
 
   private readStoredTheme(): AppTheme | null {
     const storedTheme = localStorage.getItem(THEME_STORAGE_KEY);
 
-    if (storedTheme === 'light' || storedTheme === 'dark') {
-      return storedTheme;
+    if (storedTheme === DARK_THEME_CLASS || storedTheme === 'dark') {
+      return 'dark';
+    }
+
+    if (storedTheme === LIGHT_THEME_CLASS || storedTheme === 'light') {
+      return 'light';
+    }
+
+    const legacyStoredTheme = localStorage.getItem('app-theme');
+
+    if (legacyStoredTheme === 'dark' || legacyStoredTheme === DARK_THEME_CLASS) {
+      return 'dark';
+    }
+
+    if (legacyStoredTheme === 'light' || legacyStoredTheme === LIGHT_THEME_CLASS) {
+      return 'light';
     }
 
     return null;

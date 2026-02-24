@@ -2,6 +2,15 @@
   display: block;
 }
 
+:host ::ng-deep .app-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1100;
+  border-radius: 0;
+}
+
 .brand {
   margin-left: 0.5rem;
   display: flex;

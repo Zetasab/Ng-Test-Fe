@@ -9,7 +9,7 @@
       <app-sidebar></app-sidebar>
     </aside>
 
-    <main class="shell-content">
+    <main class="shell-content" [class.sidebar-collapsed]="isSidebarCollapsed()">
       <router-outlet></router-outlet>
     </main>
   </div>

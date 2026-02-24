@@ -1,2 +1,75 @@
-<p>home works!</p>
-<om-three-globe></om-three-globe>
+<main class="home-page" aria-label="Test Home">
+	<om-particles
+		[quantity]="180"
+		[size]="0.55"
+		[circleColor]="'#9ca3af'"
+		[staticity]="70"
+		[ease]="48"
+		[particleSpeed]="0.9"
+		[vx]="0.02"
+		[vy]="0.02"
+		class="home-particles"
+	></om-particles>
+
+	<div class="home-content">
+		<section class="hero" aria-labelledby="hero-title">
+			<div class="hero-copy">
+				<p class="kicker">Test Platform</p>
+				<om-typewriter
+					id="hero-title"
+					[words]="heroWords"
+					[disableLoop]="true"
+					[writeSpeed]="55"
+					[startDelay]="120"
+					[textCursorColor]="'#9ca3af'"
+					styleClass="hero-typewriter"
+					role="heading"
+					aria-level="1"
+				></om-typewriter>
+				<p class="hero-text">
+					Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum voluptate ipsa corporis nulla, nesciunt veritatis sapiente provident accusamus, doloribus nisi temporibus esse exercitationem deleniti quaerat excepturi porro illum, dicta laudantium.
+				</p>
+			</div>
+
+			<div class="" aria-hidden="true">
+				<om-three-globe></om-three-globe>
+			</div>
+		</section>
+
+		<section class="stats" aria-label="Resumen de métricas test">
+			@for (item of testHighlights(); track item.id) {
+				<article class="stat-card">
+					<p class="stat-value">
+						<om-number-ticker
+							[countTo]="item.countTo"
+							[countDuration]="item.countDuration"
+							[transformFunction]="formatMetric"
+							styleClass="metric-ticker"
+						></om-number-ticker>
+						@if (item.suffix) {
+							<span class="metric-suffix">{{ item.suffix }}</span>
+						}
+					</p>
+					<p class="stat-label">{{ item.label }}</p>
+				</article>
+			}
+		</section>
+
+		<section class="cards" aria-labelledby="cards-title">
+			<div class="section-header">
+				<h2 id="cards-title">Módulos de Ejemplo Test</h2>
+			</div>
+
+			<div class="cards-grid">
+				@for (card of featuredTestCards(); track card.id) {
+					<article class="test-card">
+						<span class="badge">{{ card.badge }}</span>
+						<h3>{{ card.title }}</h3>
+						<p>{{ card.subtitle }}</p>
+						<button type="button" class="card-link">Ver Test</button>
+					</article>
+				}
+			</div>
+		</section>
+	</div>
+</main>

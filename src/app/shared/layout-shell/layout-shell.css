@@ -1,24 +1,30 @@
 :host {
+  --navbar-height: 4.25rem;
+  --layout-gap: 1rem;
+  --sidebar-width: 16rem;
   display: block;
   min-height: 100dvh;
 }
 
 .shell {
-  display: grid;
-  grid-template-rows: auto 1fr;
   min-height: 100dvh;
 }
 
 .shell-body {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 1rem;
-  padding: 1rem;
+  min-height: 100dvh;
+  padding: calc(var(--navbar-height) + var(--layout-gap)) var(--layout-gap) var(--layout-gap);
 }
 
 .sidebar-panel {
-  width: 16rem;
+  position: fixed;
+  top: calc(var(--navbar-height) + var(--layout-gap));
+  left: var(--layout-gap);
+  bottom: var(--layout-gap);
+  width: var(--sidebar-width);
   overflow: hidden;
+  background: var(--p-surface-0);
+  border-radius: 0.75rem;
+  z-index: 1000;
   transition: width 220ms ease, opacity 220ms ease;
   opacity: 1;
 }
@@ -29,5 +35,21 @@
 }
 
 .shell-content {
+  margin-left: calc(var(--sidebar-width) + var(--layout-gap));
   min-width: 0;
+  transition: margin-left 220ms ease;
+}
+
+.shell-content.sidebar-collapsed {
+  margin-left: 0;
+}
+
+@media (max-width: 960px) {
+  .sidebar-panel {
+    width: 14rem;
+  }
+
+  .shell-content {
+    margin-left: 0;
+  }
 }
