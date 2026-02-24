@@ -1,0 +1,64 @@
+:host {
+	display: block;
+}
+
+.genre-page {
+	padding: 1.25rem;
+}
+
+.table-caption {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	flex-wrap: wrap;
+}
+
+.caption-left {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.caption-left input[pInputText] {
+	width: min(100%, 20rem);
+}
+
+.actions-col {
+	width: 8rem;
+	text-align: center;
+}
+
+.actions-cell {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 0.25rem;
+}
+
+.empty-message {
+	text-align: center;
+	padding: 1rem;
+}
+
+.genre-form {
+	display: grid;
+	gap: 0.75rem;
+}
+
+.field-error {
+	color: var(--p-red-500, #ef4444);
+}
+
+.confirm-message {
+	margin: 0;
+	line-height: 1.5;
+}
+
+.dialog-actions {
+	margin-top: 1rem;
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+	gap: 0.75rem;
+}
