@@ -1,1 +1,248 @@
-<p>review-page works!</p>
+<section class="review-page">
+	<p-table
+		#dt
+		class="review-grid"
+		dataKey="id"
+		[value]="reviews()"
+		[loading]="isGridLoading()"
+		[paginator]="true"
+		[rows]="10"
+		[rowsPerPageOptions]="[5, 10, 20]"
+		[globalFilterFields]="['gameId', 'userId', 'rating', 'comment']"
+		[tableStyle]="{ 'min-width': '68rem' }"
+	>
+		<ng-template #caption>
+			<div class="table-caption">
+				<div class="caption-left">
+					<span class="p-input-icon-left">
+						<i class="pi pi-search" aria-hidden="true"></i>
+						<input
+							pInputText
+							type="text"
+							placeholder="Buscar review"
+							(input)="onGlobalFilter(dt, $event)"
+							aria-label="Buscar reviews"
+						/>
+					</span>
+				</div>
+
+				<button
+					pButton
+					type="button"
+					icon="pi pi-plus"
+					label="Añadir"
+					(click)="openCreateDialog()"
+				></button>
+			</div>
+		</ng-template>
+
+		<ng-template #header>
+			<tr>
+				<th pSortableColumn="gameId">
+					GameId
+					<p-sortIcon field="gameId"></p-sortIcon>
+					<p-columnFilter
+						type="text"
+						field="gameId"
+						display="menu"
+						matchMode="contains"
+						[showOperator]="false"
+						[showMatchModes]="false"
+						[showAddButton]="false"
+						[showApplyButton]="false"
+						[showClearButton]="true"
+						placeholder="Filtrar"
+					></p-columnFilter>
+				</th>
+				<th pSortableColumn="userId">
+					UserId
+					<p-sortIcon field="userId"></p-sortIcon>
+					<p-columnFilter
+						type="text"
+						field="userId"
+						display="menu"
+						matchMode="contains"
+						[showOperator]="false"
+						[showMatchModes]="false"
+						[showAddButton]="false"
+						[showApplyButton]="false"
+						[showClearButton]="true"
+						placeholder="Filtrar"
+					></p-columnFilter>
+				</th>
+				<th pSortableColumn="rating">
+					Rating
+					<p-sortIcon field="rating"></p-sortIcon>
+					<p-columnFilter
+						type="numeric"
+						field="rating"
+						display="menu"
+						matchMode="equals"
+						[showOperator]="false"
+						[showMatchModes]="false"
+						[showAddButton]="false"
+						[showApplyButton]="false"
+						[showClearButton]="true"
+						placeholder="Filtrar"
+					></p-columnFilter>
+				</th>
+				<th pSortableColumn="comment">
+					Comment
+					<p-sortIcon field="comment"></p-sortIcon>
+					<p-columnFilter
+						type="text"
+						field="comment"
+						display="menu"
+						matchMode="contains"
+						[showOperator]="false"
+						[showMatchModes]="false"
+						[showAddButton]="false"
+						[showApplyButton]="false"
+						[showClearButton]="true"
+						placeholder="Filtrar"
+					></p-columnFilter>
+				</th>
+				<th class="actions-col">Acciones</th>
+			</tr>
+		</ng-template>
+
+		<ng-template #body let-review>
+			<tr>
+				<td>{{ review.gameId }}</td>
+				<td>{{ review.userId || '-' }}</td>
+				<td>{{ review.rating }}</td>
+				<td>{{ review.comment || '-' }}</td>
+				<td class="actions-cell">
+					<button
+						pButton
+						type="button"
+						icon="pi pi-pencil"
+						[text]="true"
+						[rounded]="true"
+						aria-label="Editar review"
+						(click)="openEditDialog(review)"
+					></button>
+					<button
+						pButton
+						type="button"
+						icon="pi pi-trash"
+						severity="danger"
+						[text]="true"
+						[rounded]="true"
+						aria-label="Borrar review"
+						(click)="openDeleteDialog(review)"
+					></button>
+				</td>
+			</tr>
+		</ng-template>
+
+		<ng-template #emptymessage>
+			<tr>
+				<td colspan="5" class="empty-message">No hay reviews disponibles.</td>
+			</tr>
+		</ng-template>
+	</p-table>
+</section>
+
+<p-dialog
+	[visible]="isReviewDialogVisible()"
+	[modal]="true"
+	[draggable]="false"
+	[resizable]="false"
+	[dismissableMask]="!isSavePending()"
+	[closeOnEscape]="!isSavePending()"
+	[closable]="!isSavePending()"
+	[style]="{ width: '34rem' }"
+	[header]="reviewDialogTitle()"
+	(onHide)="closeReviewDialog()"
+>
+	<form class="review-form" [formGroup]="reviewForm" (ngSubmit)="submitReview()">
+		<label for="reviewGameId">GameId</label>
+		<input id="reviewGameId" pInputText formControlName="gameId" maxlength="100" />
+
+		@if (reviewForm.controls.gameId.invalid && (reviewForm.controls.gameId.touched || reviewForm.controls.gameId.dirty)) {
+			<small class="field-error">El GameId es obligatorio.</small>
+		}
+
+		<label for="reviewUserId">UserId</label>
+		<input id="reviewUserId" pInputText formControlName="userId" maxlength="100" />
+
+		<label for="reviewRating">Rating</label>
+		<div class="rating-field">
+			<p-slider
+				inputId="reviewRating"
+				formControlName="rating"
+				[min]="0"
+				[max]="100"
+				[step]="1"
+			></p-slider>
+			<span class="rating-value">{{ reviewForm.controls.rating.value }}</span>
+		</div>
+
+		@if (reviewForm.controls.rating.invalid && (reviewForm.controls.rating.touched || reviewForm.controls.rating.dirty)) {
+			<small class="field-error">El rating debe estar entre 0 y 100.</small>
+		}
+
+		<label for="reviewComment">Comment</label>
+		<input id="reviewComment" pInputText formControlName="comment" maxlength="500" />
+
+		<div class="dialog-actions">
+			<button
+				pButton
+				type="button"
+				label="Cancelar"
+				[text]="true"
+				(click)="closeReviewDialog()"
+				[disabled]="isSavePending()"
+			></button>
+
+			<app-ladda-response-button
+				type="submit"
+				[state]="saveButtonState()"
+				[label]="isEditMode() ? 'Guardar cambios' : 'Crear review'"
+				[loadingLabel]="isEditMode() ? 'Guardando...' : 'Creando...'"
+				[correctLabel]="isEditMode() ? 'Actualizado' : 'Creado'"
+				[wrongLabel]="'Error al guardar'"
+			></app-ladda-response-button>
+		</div>
+	</form>
+</p-dialog>
+
+<p-dialog
+	[visible]="isDeleteDialogVisible()"
+	header="Confirmar borrado"
+	[modal]="true"
+	[draggable]="false"
+	[resizable]="false"
+	[dismissableMask]="!isDeletePending()"
+	[closeOnEscape]="!isDeletePending()"
+	[closable]="!isDeletePending()"
+	[style]="{ width: '28rem' }"
+	(onHide)="closeDeleteDialog()"
+>
+	<p class="confirm-message">
+		¿Seguro que quieres borrar el review de game
+		<strong>{{ deletingReview()?.gameId }}</strong>
+		?
+	</p>
+
+	<div class="dialog-actions">
+		<button
+			pButton
+			type="button"
+			label="Cancelar"
+			[text]="true"
+			(click)="closeDeleteDialog()"
+			[disabled]="isDeletePending()"
+		></button>
+
+		<app-ladda-response-button
+			[state]="deleteButtonState()"
+			label="Borrar"
+			loadingLabel="Borrando..."
+			correctLabel="Borrado"
+			wrongLabel="Error al borrar"
+			(pressed)="confirmDelete()"
+		></app-ladda-response-button>
+	</div>
+</p-dialog>

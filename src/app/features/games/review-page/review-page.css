@@ -1,0 +1,84 @@
+:host {
+	display: block;
+}
+
+.review-page {
+	padding: 1.25rem;
+}
+
+.table-caption {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	flex-wrap: wrap;
+}
+
+.caption-left {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.caption-left input[pInputText] {
+	width: min(100%, 20rem);
+}
+
+.actions-col {
+	width: 8rem;
+	text-align: center;
+}
+
+.actions-cell {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 0.25rem;
+}
+
+.empty-message {
+	text-align: center;
+	padding: 1rem;
+}
+
+.review-form {
+	display: grid;
+	gap: 0.75rem;
+}
+
+.rating-field {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+}
+
+.rating-value {
+	min-width: 2.5rem;
+	text-align: right;
+	font-weight: 600;
+}
+
+.field-error {
+	color: var(--p-red-500, #ef4444);
+}
+
+.confirm-message {
+	margin: 0;
+	line-height: 1.5;
+}
+
+.dialog-actions {
+	margin-top: 1rem;
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+	gap: 0.75rem;
+}
+
+:host ::ng-deep .review-form .p-inputnumber {
+	width: 100%;
+}
+
+:host ::ng-deep .review-form .p-slider {
+	flex: 1;
+}
