@@ -1,1 +1,174 @@
-<p>gamesearch-page works!</p>
+<section class="gamesearch-page" aria-label="Búsqueda de games">
+	<form class="filters" [formGroup]="searchForm" (ngSubmit)="submitSearch()">
+		<div class="filters-grid">
+			<div class="field">
+				<label for="searchTitle">Título</label>
+				<input id="searchTitle" pInputText formControlName="title" placeholder="Busca por título" />
+			</div>
+
+			<div class="field">
+				<label for="searchDescription">Descripción</label>
+				<input id="searchDescription" pInputText formControlName="description" placeholder="Busca por descripción" />
+			</div>
+
+			<div class="field">
+				<label for="searchReleaseDate">Fecha lanzamiento</label>
+				<p-datepicker
+					inputId="searchReleaseDate"
+					formControlName="releaseDate"
+					dateFormat="yy-mm-dd"
+					[showIcon]="true"
+					[showButtonBar]="true"
+					appendTo="body"
+				></p-datepicker>
+			</div>
+
+			<div class="field">
+				<label for="searchPlatform">Platform</label>
+				<p-select
+					inputId="searchPlatform"
+					formControlName="platformId"
+					[options]="platformOptions()"
+					optionLabel="label"
+					optionValue="value"
+					[filter]="true"
+					[showClear]="true"
+					[loading]="areLookupsLoading()"
+					appendTo="body"
+				></p-select>
+			</div>
+
+			<div class="field">
+				<label for="searchDeveloper">Developer</label>
+				<p-select
+					inputId="searchDeveloper"
+					formControlName="developerId"
+					[options]="developerOptions()"
+					optionLabel="label"
+					optionValue="value"
+					[filter]="true"
+					[showClear]="true"
+					[loading]="areLookupsLoading()"
+					appendTo="body"
+				></p-select>
+			</div>
+
+			<div class="field">
+				<label for="searchTags">Tags</label>
+				<p-multiselect
+					inputId="searchTags"
+					formControlName="tagIds"
+					[options]="tagOptions()"
+					optionLabel="label"
+					optionValue="value"
+					[filter]="true"
+					[showClear]="true"
+					[loading]="areLookupsLoading()"
+					display="chip"
+					appendTo="body"
+				></p-multiselect>
+			</div>
+
+			<div class="field">
+				<label for="searchGenres">Genres</label>
+				<p-multiselect
+					inputId="searchGenres"
+					formControlName="genreIds"
+					[options]="genreOptions()"
+					optionLabel="label"
+					optionValue="value"
+					[filter]="true"
+					[showClear]="true"
+					[loading]="areLookupsLoading()"
+					display="chip"
+					appendTo="body"
+				></p-multiselect>
+			</div>
+
+			<div class="field">
+				<label for="searchReviews">Reviews</label>
+				<p-multiselect
+					inputId="searchReviews"
+					formControlName="reviewIds"
+					[options]="reviewOptions()"
+					optionLabel="label"
+					optionValue="value"
+					[filter]="true"
+					[showClear]="true"
+					[loading]="areLookupsLoading()"
+					display="chip"
+					appendTo="body"
+				></p-multiselect>
+			</div>
+
+			<div class="field page-size-field">
+				<label for="searchPageSize">Resultados por página</label>
+				<p-select
+					inputId="searchPageSize"
+					formControlName="pageSize"
+					[options]="pageSizeOptions"
+					appendTo="body"
+				></p-select>
+			</div>
+		</div>
+
+		<div class="filters-actions">
+			<button pButton type="submit" label="Buscar" icon="pi pi-search" [loading]="isLoading()"></button>
+			<button pButton type="button" [text]="true" label="Limpiar" icon="pi pi-filter-slash" (click)="clearFilters()" [disabled]="isLoading()"></button>
+		</div>
+	</form>
+
+	<section class="results" aria-live="polite">
+		<div class="results-header">
+			<p>{{ totalResults() }} resultados</p>
+			<p>Página {{ currentPage() }} de {{ totalPages() }}</p>
+		</div>
+
+		@if (isLoading()) {
+			<p class="empty-state">Buscando games...</p>
+		} @else if (!games().length) {
+			<p class="empty-state">No se encontraron games con esos filtros.</p>
+		} @else {
+			<div class="games-grid">
+				@for (game of games(); track trackByGameId($index, game)) {
+					<article class="game-card" [style.background-image]="buildCardBackground(game.imgUrl)">
+						<div class="card-bottom">
+							<h3 class="card-title">{{ game.title }}</h3>
+
+							<div class="card-summary-chips">
+								<span class="info-chip chip-release">{{ game.releaseDate || '-' }}</span>
+								<span class="info-chip chip-platform">{{ getPlatformName(game.platformId) }}</span>
+								<span class="info-chip chip-developer">{{ getDeveloperName(game.developerId) }}</span>
+							</div>
+
+							<div class="card-detail-row">
+								<span class="detail-label">Tags</span>
+								<div class="chip-list">
+									@for (tagLabel of getTagLabels(game.tagIds); track tagLabel) {
+										<span class="info-chip chip-tags">{{ tagLabel }}</span>
+									}
+								</div>
+							</div>
+
+							<div class="card-detail-row">
+								<span class="detail-label">Genres</span>
+								<div class="chip-list">
+									@for (genreLabel of getGenreLabels(game.genreIds); track genreLabel) {
+										<span class="info-chip chip-genres">{{ genreLabel }}</span>
+									}
+								</div>
+							</div>
+
+						
+						</div>
+					</article>
+				}
+			</div>
+
+			<div class="pager">
+				<button pButton type="button" icon="pi pi-angle-left" label="Anterior" [text]="true" (click)="goToPreviousPage()" [disabled]="currentPage() <= 1 || isLoading()"></button>
+				<button pButton type="button" icon="pi pi-angle-right" iconPos="right" label="Siguiente" [text]="true" (click)="goToNextPage()" [disabled]="currentPage() >= totalPages() || isLoading()"></button>
+			</div>
+		}
+	</section>
+</section>

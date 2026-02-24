@@ -1,0 +1,233 @@
+:host {
+	display: block;
+}
+
+.gamesearch-page {
+	padding: 1.25rem;
+	display: grid;
+	gap: 1.25rem;
+}
+
+.filters {
+	padding: 1rem;
+	border-radius: 0.75rem;
+	background: linear-gradient(
+		150deg,
+		color-mix(in srgb, var(--p-surface-900) 92%, transparent) 0%,
+		color-mix(in srgb, var(--p-surface-800) 90%, transparent) 100%
+	);
+	border: 1px solid color-mix(in srgb, var(--p-primary-color) 34%, transparent);
+	display: grid;
+	gap: 1rem;
+	box-shadow: var(--p-overlay-modal-shadow);
+}
+
+.filters-grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 0.85rem;
+}
+
+.field {
+	display: grid;
+	gap: 0.4rem;
+}
+
+.field label {
+	font-size: 0.85rem;
+	font-weight: 600;
+	color: var(--p-surface-0);
+}
+
+.page-size-field {
+	max-width: 14rem;
+}
+
+.filters-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 0.5rem;
+	flex-wrap: wrap;
+}
+
+.results {
+	display: grid;
+	gap: 1rem;
+}
+
+.results-header {
+	display: flex;
+	justify-content: space-between;
+	gap: 1rem;
+	flex-wrap: wrap;
+	font-weight: 600;
+	color: var(--p-text-color);
+}
+
+.results-header p {
+	margin: 0;
+}
+
+.games-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+	gap: 1rem;
+}
+
+.game-card {
+	position: relative;
+	min-height: 15rem;
+	border-radius: 0.9rem;
+	overflow: hidden;
+	background-size: cover;
+	background-position: center;
+	display: flex;
+	align-items: flex-end;
+	border: 1px solid color-mix(in srgb, var(--p-primary-color) 32%, transparent);
+	box-shadow: var(--p-overlay-modal-shadow);
+}
+
+.card-bottom {
+	width: 100%;
+	padding: 0.9rem 0.9rem 1rem;
+	background: linear-gradient(
+		to top,
+		color-mix(in srgb, var(--p-surface-950) 94%, transparent) 0%,
+		color-mix(in srgb, var(--p-surface-900) 84%, transparent) 58%,
+		color-mix(in srgb, var(--p-surface-950) 28%, transparent) 86%,
+		color-mix(in srgb, var(--p-surface-950) 0%, transparent) 100%
+	);
+	color: var(--p-surface-0);
+	display: grid;
+	gap: 0.45rem;
+}
+
+.card-title {
+	margin: 0;
+	font-size: 1.05rem;
+	font-weight: 700;
+	line-height: 1.2;
+	text-shadow: 0 1px 2px rgb(0 0 0 / 35%);
+}
+
+.card-summary-chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.4rem;
+}
+
+.card-detail-row {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	align-items: start;
+	gap: 0.5rem;
+}
+
+.chip-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.35rem;
+	min-width: 0;
+}
+
+.detail-label {
+	font-size: 0.75rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	opacity: 0.92;
+}
+
+.info-chip {
+	display: inline-flex;
+	align-items: center;
+	max-width: 100%;
+	padding: 0.2rem 0.5rem;
+	border-radius: 999px;
+	font-size: 0.76rem;
+	font-weight: 600;
+	line-height: 1.1;
+	margin: 0;
+	border: 1px solid transparent;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.chip-release {
+	background: color-mix(in srgb, var(--p-surface-700) 82%, transparent);
+	border-color: color-mix(in srgb, var(--p-surface-500) 70%, transparent);
+	color: var(--p-surface-0);
+}
+
+.chip-platform {
+	background: color-mix(in srgb, var(--p-primary-color) 22%, transparent);
+	border-color: color-mix(in srgb, var(--p-primary-color) 55%, transparent);
+	color: var(--p-surface-0);
+}
+
+.chip-developer {
+	background: color-mix(in srgb, var(--p-highlight-background) 28%, transparent);
+	border-color: color-mix(in srgb, var(--p-highlight-color) 45%, transparent);
+	color: var(--p-surface-0);
+}
+
+.chip-tags {
+	background: color-mix(in srgb, var(--p-green-500) 22%, transparent);
+	border-color: color-mix(in srgb, var(--p-green-400) 55%, transparent);
+	color: var(--p-surface-0);
+}
+
+.chip-genres {
+	background: color-mix(in srgb, var(--p-orange-500) 24%, transparent);
+	border-color: color-mix(in srgb, var(--p-orange-400) 55%, transparent);
+	color: var(--p-surface-0);
+}
+
+.chip-reviews {
+	background: var(--p-cyan-100, var(--p-content-background));
+	border-color: var(--p-cyan-300, var(--p-content-border-color));
+	color: var(--p-cyan-800, var(--p-text-color));
+}
+
+.empty-state {
+	margin: 0;
+	padding: 1rem;
+	text-align: center;
+	border-radius: 0.6rem;
+	background: color-mix(in srgb, var(--p-surface-900) 84%, transparent);
+	border: 1px solid color-mix(in srgb, var(--p-primary-color) 32%, transparent);
+}
+
+.pager {
+	display: flex;
+	justify-content: center;
+	gap: 0.75rem;
+	flex-wrap: wrap;
+}
+
+:host ::ng-deep .filters .p-select,
+:host ::ng-deep .filters .p-multiselect,
+:host ::ng-deep .filters .p-datepicker {
+	width: 100%;
+}
+
+@media (max-width: 1080px) {
+	.filters-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 720px) {
+	.gamesearch-page {
+		padding: 0.9rem;
+	}
+
+	.filters-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.page-size-field {
+		max-width: none;
+	}
+}
