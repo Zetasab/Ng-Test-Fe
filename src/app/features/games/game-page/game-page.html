@@ -1,1 +1,290 @@
-<p>game-page works!</p>
+<section class="game-page">
+	<p-table
+		#dt
+		class="game-grid"
+		dataKey="id"
+		[value]="games()"
+		[loading]="isGridLoading()"
+		[paginator]="true"
+		[rows]="10"
+		[rowsPerPageOptions]="[5, 10, 20]"
+		[globalFilterFields]="['title', 'imgUrl', 'description', 'releaseDate', 'platformId', 'developerId']"
+		[tableStyle]="{ 'min-width': '82rem' }"
+	>
+		<ng-template #caption>
+			<div class="table-caption">
+				<div class="caption-left">
+					<span class="p-input-icon-left">
+						<i class="pi pi-search" aria-hidden="true"></i>
+						<input
+							pInputText
+							type="text"
+							placeholder="Buscar game"
+							(input)="onGlobalFilter(dt, $event)"
+							aria-label="Buscar games"
+						/>
+					</span>
+				</div>
+
+				<button
+					pButton
+					type="button"
+					icon="pi pi-plus"
+					label="Añadir"
+					(click)="openCreateDialog()"
+				></button>
+			</div>
+		</ng-template>
+
+		<ng-template #header>
+			<tr>
+				<th pSortableColumn="title">
+					Título
+					<p-sortIcon field="title"></p-sortIcon>
+					<p-columnFilter
+						type="text"
+						field="title"
+						display="menu"
+						matchMode="contains"
+						[showOperator]="false"
+						[showMatchModes]="false"
+						[showAddButton]="false"
+						[showApplyButton]="false"
+						[showClearButton]="true"
+						placeholder="Filtrar"
+					></p-columnFilter>
+				</th>
+				<th pSortableColumn="releaseDate">
+					Lanzamiento
+					<p-sortIcon field="releaseDate"></p-sortIcon>
+				</th>
+				<th pSortableColumn="imgUrl">
+					ImgUrl
+					<p-sortIcon field="imgUrl"></p-sortIcon>
+				</th>
+				<th pSortableColumn="platformId">
+					PlatformId
+					<p-sortIcon field="platformId"></p-sortIcon>
+				</th>
+				<th pSortableColumn="developerId">
+					DeveloperId
+					<p-sortIcon field="developerId"></p-sortIcon>
+				</th>
+				<th>Tags</th>
+				<th>Genres</th>
+				<th>Reviews</th>
+				<th class="actions-col">Acciones</th>
+			</tr>
+		</ng-template>
+
+		<ng-template #body let-game>
+			<tr>
+				<td>{{ game.title }}</td>
+				<td>{{ game.releaseDate || '-' }}</td>
+				<td>{{ game.imgUrl || '-' }}</td>
+				<td>{{ getPlatformName(game.platformId) }}</td>
+				<td>{{ getDeveloperName(game.developerId) }}</td>
+				<td>{{ getTagNames(game.tagIds) }}</td>
+				<td>{{ getGenreNames(game.genreIds) }}</td>
+				<td>{{ getReviewLabels(game.reviewIds) }}</td>
+				<td class="actions-cell">
+					<button
+						pButton
+						type="button"
+						icon="pi pi-pencil"
+						[text]="true"
+						[rounded]="true"
+						aria-label="Editar game"
+						(click)="openEditDialog(game)"
+					></button>
+					<button
+						pButton
+						type="button"
+						icon="pi pi-trash"
+						severity="danger"
+						[text]="true"
+						[rounded]="true"
+						aria-label="Borrar game"
+						(click)="openDeleteDialog(game)"
+					></button>
+				</td>
+			</tr>
+		</ng-template>
+
+		<ng-template #emptymessage>
+			<tr>
+				<td colspan="9" class="empty-message">No hay games disponibles.</td>
+			</tr>
+		</ng-template>
+	</p-table>
+</section>
+
+<p-dialog
+	[visible]="isGameDialogVisible()"
+	[modal]="true"
+	[draggable]="false"
+	[resizable]="false"
+	[dismissableMask]="!isSavePending()"
+	[closeOnEscape]="!isSavePending()"
+	[closable]="!isSavePending()"
+	[style]="{ width: '42rem' }"
+	[header]="gameDialogTitle()"
+	(onHide)="closeGameDialog()"
+>
+	<form class="game-form" [formGroup]="gameForm" (ngSubmit)="submitGame()">
+		<label for="gameTitle">Título</label>
+		<input id="gameTitle" pInputText formControlName="title" maxlength="160" />
+
+		@if (gameForm.controls.title.invalid && (gameForm.controls.title.touched || gameForm.controls.title.dirty)) {
+			<small class="field-error">El título es obligatorio.</small>
+		}
+
+		<label for="gameDescription">Descripción</label>
+		<input id="gameDescription" pInputText formControlName="description" maxlength="500" />
+
+		<label for="gameImgUrl">ImgUrl</label>
+		<input id="gameImgUrl" pInputText formControlName="imgUrl" maxlength="500" />
+
+		<label for="gameReleaseDate">Fecha lanzamiento</label>
+		<p-datepicker
+			inputId="gameReleaseDate"
+			formControlName="releaseDate"
+			dateFormat="yy-mm-dd"
+			[showIcon]="true"
+			[showButtonBar]="true"
+			appendTo="body"
+		></p-datepicker>
+
+		<label for="gamePlatformId">PlatformId</label>
+		<p-select
+			inputId="gamePlatformId"
+			formControlName="platformId"
+			[options]="platformOptions()"
+			optionLabel="label"
+			optionValue="value"
+			[filter]="true"
+			[showClear]="true"
+			[loading]="areLookupsLoading()"
+			placeholder="Selecciona plataforma"
+			appendTo="body"
+		></p-select>
+
+		<label for="gameDeveloperId">DeveloperId</label>
+		<p-select
+			inputId="gameDeveloperId"
+			formControlName="developerId"
+			[options]="developerOptions()"
+			optionLabel="label"
+			optionValue="value"
+			[filter]="true"
+			[showClear]="true"
+			[loading]="areLookupsLoading()"
+			placeholder="Selecciona developer"
+			appendTo="body"
+		></p-select>
+
+		<label for="gameTagIds">TagIds</label>
+		<p-multiselect
+			inputId="gameTagIds"
+			formControlName="tagIds"
+			[options]="tagOptions()"
+			optionLabel="label"
+			optionValue="value"
+			[filter]="true"
+			[showClear]="true"
+			[loading]="areLookupsLoading()"
+			display="chip"
+			placeholder="Selecciona tags"
+			appendTo="body"
+		></p-multiselect>
+
+		<label for="gameGenreIds">GenreIds</label>
+		<p-multiselect
+			inputId="gameGenreIds"
+			formControlName="genreIds"
+			[options]="genreOptions()"
+			optionLabel="label"
+			optionValue="value"
+			[filter]="true"
+			[showClear]="true"
+			[loading]="areLookupsLoading()"
+			display="chip"
+			placeholder="Selecciona genres"
+			appendTo="body"
+		></p-multiselect>
+
+		<label for="gameReviewIds">ReviewIds</label>
+		<p-multiselect
+			inputId="gameReviewIds"
+			formControlName="reviewIds"
+			[options]="reviewOptions()"
+			optionLabel="label"
+			optionValue="value"
+			[filter]="true"
+			[showClear]="true"
+			[loading]="areLookupsLoading()"
+			display="chip"
+			placeholder="Selecciona reviews"
+			appendTo="body"
+		></p-multiselect>
+
+		<div class="dialog-actions">
+			<button
+				pButton
+				type="button"
+				label="Cancelar"
+				[text]="true"
+				(click)="closeGameDialog()"
+				[disabled]="isSavePending()"
+			></button>
+
+			<app-ladda-response-button
+				type="submit"
+				[state]="saveButtonState()"
+				[label]="isEditMode() ? 'Guardar cambios' : 'Crear game'"
+				[loadingLabel]="isEditMode() ? 'Guardando...' : 'Creando...'"
+				[correctLabel]="isEditMode() ? 'Actualizado' : 'Creado'"
+				[wrongLabel]="'Error al guardar'"
+			></app-ladda-response-button>
+		</div>
+	</form>
+</p-dialog>
+
+<p-dialog
+	[visible]="isDeleteDialogVisible()"
+	header="Confirmar borrado"
+	[modal]="true"
+	[draggable]="false"
+	[resizable]="false"
+	[dismissableMask]="!isDeletePending()"
+	[closeOnEscape]="!isDeletePending()"
+	[closable]="!isDeletePending()"
+	[style]="{ width: '28rem' }"
+	(onHide)="closeDeleteDialog()"
+>
+	<p class="confirm-message">
+		¿Seguro que quieres borrar el game
+		<strong>{{ deletingGame()?.title }}</strong>
+		?
+	</p>
+
+	<div class="dialog-actions">
+		<button
+			pButton
+			type="button"
+			label="Cancelar"
+			[text]="true"
+			(click)="closeDeleteDialog()"
+			[disabled]="isDeletePending()"
+		></button>
+
+		<app-ladda-response-button
+			[state]="deleteButtonState()"
+			label="Borrar"
+			loadingLabel="Borrando..."
+			correctLabel="Borrado"
+			wrongLabel="Error al borrar"
+			(pressed)="confirmDelete()"
+		></app-ladda-response-button>
+	</div>
+</p-dialog>
