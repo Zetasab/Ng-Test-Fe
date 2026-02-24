@@ -158,7 +158,18 @@
 >
 	<form class="review-form" [formGroup]="reviewForm" (ngSubmit)="submitReview()">
 		<label for="reviewGameId">GameId</label>
-		<input id="reviewGameId" pInputText formControlName="gameId" maxlength="100" />
+		<p-select
+			inputId="reviewGameId"
+			formControlName="gameId"
+			[options]="gameOptions()"
+			optionLabel="label"
+			optionValue="value"
+			[filter]="true"
+			[showClear]="true"
+			[loading]="isGameOptionsLoading()"
+			placeholder="Selecciona game"
+			appendTo="body"
+		></p-select>
 
 		@if (reviewForm.controls.gameId.invalid && (reviewForm.controls.gameId.touched || reviewForm.controls.gameId.dirty)) {
 			<small class="field-error">El GameId es obligatorio.</small>

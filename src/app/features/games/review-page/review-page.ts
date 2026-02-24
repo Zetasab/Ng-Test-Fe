@@ -4,14 +4,22 @@ import { firstValueFrom } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
 import { SliderModule } from 'primeng/slider';
 import { Table, TableModule } from 'primeng/table';
 import {
   LaddaResponseButton,
   type LaddaResponseState,
 } from '../../../components/ladda-response-button/ladda-response-button';
+import { GameService } from '../../../services/games/game.service';
 import { ReviewService } from '../../../services/games/review.service';
+import { GameModel } from '../../../../models/games/game.model';
 import { ReviewModel } from '../../../../models/games/review.model';
+
+type SelectOption = {
+  value: string;
+  label: string;
+};
 
 @Component({
   selector: 'app-review-page',
@@ -21,6 +29,7 @@ import { ReviewModel } from '../../../../models/games/review.model';
     DialogModule,
     ButtonModule,
     InputTextModule,
+    SelectModule,
     SliderModule,
     LaddaResponseButton,
   ],
@@ -33,9 +42,12 @@ export class ReviewPage {
 
   private readonly formBuilder = inject(FormBuilder);
   private readonly reviewService = inject(ReviewService);
+  private readonly gameService = inject(GameService);
 
   protected readonly reviews = signal<ReviewModel[]>([]);
   protected readonly isGridLoading = signal(false);
+  protected readonly isGameOptionsLoading = signal(false);
+  protected readonly gameOptions = signal<SelectOption[]>([]);
 
   protected readonly isReviewDialogVisible = signal(false);
   protected readonly dialogMode = signal<'create' | 'edit'>('create');
@@ -55,13 +67,14 @@ export class ReviewPage {
   );
 
   protected readonly reviewForm = this.formBuilder.nonNullable.group({
-    gameId: ['', [Validators.required, Validators.maxLength(100)]],
+    gameId: this.formBuilder.control<string | null>(null, [Validators.required, Validators.maxLength(100)]),
     userId: ['', [Validators.maxLength(100)]],
     rating: [0, [Validators.required, Validators.min(0), Validators.max(100)]],
     comment: ['', [Validators.maxLength(500)]],
   });
 
   public ngOnInit(): void {
+    void this.loadGameOptions();
     void this.loadReviews();
   }
 
@@ -69,7 +82,7 @@ export class ReviewPage {
     this.dialogMode.set('create');
     this.editingReviewId.set(null);
     this.reviewForm.reset({
-      gameId: '',
+      gameId: null,
       userId: '',
       rating: 0,
       comment: '',
@@ -115,7 +128,13 @@ export class ReviewPage {
 
     try {
       const model = new ReviewModel();
-      model.gameId = this.reviewForm.controls.gameId.value.trim();
+      const gameIdValue = this.reviewForm.controls.gameId.value;
+
+      if (!gameIdValue) {
+        throw new Error('Debes seleccionar un game.');
+      }
+
+      model.gameId = gameIdValue;
 
       const userIdValue = this.reviewForm.controls.userId.value.trim();
       model.userId = userIdValue ? userIdValue : null;
@@ -212,10 +231,31 @@ export class ReviewPage {
     }
   }
 
+  private async loadGameOptions(): Promise<void> {
+    this.isGameOptionsLoading.set(true);
+
+    try {
+      const games = await firstValueFrom(this.gameService.getAll());
+      this.gameOptions.set(this.mapGameOptions(games));
+    } catch (error: unknown) {
+      console.error('Error cargando games para reviews:', error);
+      this.gameOptions.set([]);
+    } finally {
+      this.isGameOptionsLoading.set(false);
+    }
+  }
+
   private async waitButtonFeedback(): Promise<void> {
     await new Promise<void>((resolve) => {
       window.setTimeout(resolve, ReviewPage.BUTTON_FEEDBACK_DELAY_MS);
     });
+  }
+
+  private mapGameOptions(games: GameModel[]): SelectOption[] {
+    return games.map((game) => ({
+      value: game.id,
+      label: game.title,
+    }));
   }
 
 }

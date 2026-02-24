@@ -20,6 +20,48 @@
 	gap: 0.5rem;
 }
 
+:host ::ng-deep .game-grid .p-datatable-table {
+	table-layout: fixed;
+}
+
+:host ::ng-deep .game-grid .p-datatable-thead > tr > th,
+:host ::ng-deep .game-grid .p-datatable-tbody > tr > td {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.game-cover {
+	width: 7rem;
+	height: 4.25rem;
+	object-fit: cover;
+	border-radius: 0.35rem;
+}
+
+.cover-col {
+	width: 8.5rem;
+}
+
+.title-col {
+	width: 14rem;
+}
+
+.release-col {
+	width: 8.5rem;
+}
+
+.img-col {
+	width: 14rem;
+}
+
+.platform-col,
+.developer-col,
+.tags-col,
+.genres-col,
+.reviews-col {
+	width: 10rem;
+}
+
 .caption-left input[pInputText] {
 	width: min(100%, 20rem);
 }
@@ -34,6 +76,11 @@
 	justify-content: center;
 	align-items: center;
 	gap: 0.25rem;
+}
+
+:host ::ng-deep .actions-cell .p-button {
+	min-width: 2.5rem;
+	height: 2.5rem;
 }
 
 .empty-message {
