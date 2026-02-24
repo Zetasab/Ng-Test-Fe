@@ -1,1 +1,222 @@
-<p>developer-page works!</p>
+<section class="developer-page">
+	<p-table
+		#dt
+		class="developer-grid"
+		dataKey="id"
+		[value]="developers()"
+		[loading]="isGridLoading()"
+		[paginator]="true"
+		[rows]="10"
+		[rowsPerPageOptions]="[5, 10, 20]"
+		[globalFilterFields]="['name', 'country', 'foundedDate']"
+		[tableStyle]="{ 'min-width': '60rem' }"
+	>
+		<ng-template #caption>
+			<div class="table-caption">
+				<div class="caption-left">
+					<span class="p-input-icon-left">
+						<i class="pi pi-search" aria-hidden="true"></i>
+						<input
+							pInputText
+							type="text"
+							placeholder="Buscar developer"
+							(input)="onGlobalFilter(dt, $event)"
+							aria-label="Buscar developers"
+						/>
+					</span>
+				</div>
+
+				<button
+					pButton
+					type="button"
+					icon="pi pi-plus"
+					label="Añadir"
+					(click)="openCreateDialog()"
+				></button>
+			</div>
+		</ng-template>
+
+		<ng-template #header>
+			<tr>
+				<th pSortableColumn="name">
+					Nombre
+					<p-sortIcon field="name"></p-sortIcon>
+					<p-columnFilter
+						type="text"
+						field="name"
+						display="menu"
+						matchMode="contains"
+						[showOperator]="false"
+						[showMatchModes]="false"
+						[showAddButton]="false"
+						[showApplyButton]="false"
+						[showClearButton]="true"
+						placeholder="Filtrar"
+					></p-columnFilter>
+				</th>
+				<th pSortableColumn="country">
+					País
+					<p-sortIcon field="country"></p-sortIcon>
+					<p-columnFilter
+						type="text"
+						field="country"
+						display="menu"
+						matchMode="contains"
+						[showOperator]="false"
+						[showMatchModes]="false"
+						[showAddButton]="false"
+						[showApplyButton]="false"
+						[showClearButton]="true"
+						placeholder="Filtrar"
+					></p-columnFilter>
+				</th>
+				<th pSortableColumn="foundedDate">
+					Fundación
+					<p-sortIcon field="foundedDate"></p-sortIcon>
+					<p-columnFilter
+						type="text"
+						field="foundedDate"
+						display="menu"
+						matchMode="contains"
+						[showOperator]="false"
+						[showMatchModes]="false"
+						[showAddButton]="false"
+						[showApplyButton]="false"
+						[showClearButton]="true"
+						placeholder="Filtrar"
+					></p-columnFilter>
+				</th>
+				<th class="actions-col">Acciones</th>
+			</tr>
+		</ng-template>
+
+		<ng-template #body let-developer let-rowIndex="rowIndex">
+			<tr>
+				<td>{{ developer.name }}</td>
+				<td>{{ developer.country || '-' }}</td>
+				<td>{{ developer.foundedDate || '-' }}</td>
+				<td class="actions-cell">
+					<button
+						pButton
+						type="button"
+						icon="pi pi-pencil"
+						[text]="true"
+						[rounded]="true"
+						aria-label="Editar developer"
+						(click)="openEditDialog(developer)"
+					></button>
+					<button
+						pButton
+						type="button"
+						icon="pi pi-trash"
+						severity="danger"
+						[text]="true"
+						[rounded]="true"
+						aria-label="Borrar developer"
+						(click)="openDeleteDialog(developer)"
+					></button>
+				</td>
+			</tr>
+		</ng-template>
+
+		<ng-template #emptymessage>
+			<tr>
+				<td colspan="4" class="empty-message">No hay developers disponibles.</td>
+			</tr>
+		</ng-template>
+	</p-table>
+</section>
+
+<p-dialog
+	[visible]="isDeveloperDialogVisible()"
+	[modal]="true"
+	[draggable]="false"
+	[resizable]="false"
+	[dismissableMask]="!isSavePending()"
+	[closeOnEscape]="!isSavePending()"
+	[closable]="!isSavePending()"
+	[style]="{ width: '32rem' }"
+	[header]="developerDialogTitle()"
+	(onHide)="closeDeveloperDialog()"
+>
+	<form class="developer-form" [formGroup]="developerForm" (ngSubmit)="submitDeveloper()">
+		<label for="developerName">Nombre</label>
+		<input id="developerName" pInputText formControlName="name" maxlength="120" />
+
+		@if (developerForm.controls.name.invalid && (developerForm.controls.name.touched || developerForm.controls.name.dirty)) {
+			<small class="field-error">El nombre es obligatorio.</small>
+		}
+
+		<label for="developerCountry">País</label>
+		<input id="developerCountry" pInputText formControlName="country" maxlength="120" />
+
+		<label for="developerFoundedDate">Fundación</label>
+		<p-datepicker
+			inputId="developerFoundedDate"
+			formControlName="foundedDate"
+			dateFormat="yy-mm-dd"
+			[showIcon]="true"
+			[showButtonBar]="true"
+			appendTo="body"
+		></p-datepicker>
+
+		<div class="dialog-actions">
+			<button
+				pButton
+				type="button"
+				label="Cancelar"
+				[text]="true"
+				(click)="closeDeveloperDialog()"
+				[disabled]="isSavePending()"
+			></button>
+
+			<app-ladda-response-button
+				type="submit"
+				[state]="saveButtonState()"
+				[label]="isEditMode() ? 'Guardar cambios' : 'Crear developer'"
+				[loadingLabel]="isEditMode() ? 'Guardando...' : 'Creando...'"
+				[correctLabel]="isEditMode() ? 'Actualizado' : 'Creado'"
+				[wrongLabel]="'Error al guardar'"
+			></app-ladda-response-button>
+		</div>
+	</form>
+</p-dialog>
+
+<p-dialog
+	[visible]="isDeleteDialogVisible()"
+	header="Confirmar borrado"
+	[modal]="true"
+	[draggable]="false"
+	[resizable]="false"
+	[dismissableMask]="!isDeletePending()"
+	[closeOnEscape]="!isDeletePending()"
+	[closable]="!isDeletePending()"
+	[style]="{ width: '28rem' }"
+	(onHide)="closeDeleteDialog()"
+>
+	<p class="confirm-message">
+		¿Seguro que quieres borrar el developer
+		<strong>{{ deletingDeveloper()?.name }}</strong>
+		?
+	</p>
+
+	<div class="dialog-actions">
+		<button
+			pButton
+			type="button"
+			label="Cancelar"
+			[text]="true"
+			(click)="closeDeleteDialog()"
+			[disabled]="isDeletePending()"
+		></button>
+
+		<app-ladda-response-button
+			[state]="deleteButtonState()"
+			label="Borrar"
+			loadingLabel="Borrando..."
+			correctLabel="Borrado"
+			wrongLabel="Error al borrar"
+			(pressed)="confirmDelete()"
+		></app-ladda-response-button>
+	</div>
+</p-dialog>
