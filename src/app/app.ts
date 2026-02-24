@@ -1,11 +1,11 @@
 import { Component, inject, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { LayoutShell } from './shared/layout-shell/layout-shell';
 import { ThemeService } from './shared/theme.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
-  template: '<router-outlet />',
+  imports: [LayoutShell],
+  template: '<app-layout-shell />',
   styleUrl: './app.css'
 })
 export class App {

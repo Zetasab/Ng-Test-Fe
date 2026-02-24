@@ -1,0 +1,16 @@
+<div class="shell">
+  <app-navbar
+    [isSidebarCollapsed]="isSidebarCollapsed()"
+    (toggleSidebar)="toggleSidebar()"
+  ></app-navbar>
+
+  <div class="shell-body">
+    <aside class="sidebar-panel" [class.is-collapsed]="isSidebarCollapsed()">
+      <app-sidebar></app-sidebar>
+    </aside>
+
+    <main class="shell-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

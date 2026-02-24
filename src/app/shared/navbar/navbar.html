@@ -1,0 +1,33 @@
+<header>
+  <p-toolbar styleClass="app-navbar">
+    <ng-template #start>
+      <button
+        pButton
+        type="button"
+        class="p-button-text p-button-rounded"
+        [icon]="isSidebarCollapsed() ? 'pi pi-angle-right' : 'pi pi-angle-left'"
+        [attr.aria-label]="isSidebarCollapsed() ? 'Mostrar menú lateral' : 'Ocultar menú lateral'"
+        [attr.aria-expanded]="!isSidebarCollapsed()"
+        (click)="onToggleSidebar()"
+      ></button>
+
+      <div class="brand">
+        <i class="pi pi-gamepad" aria-hidden="true"></i>
+        <span>Zeta Games</span>
+      </div>
+    </ng-template>
+
+    <ng-template #end>
+      <div class="actions">
+        <om-theme-toggle
+          themeTarget="html"
+          lightThemeClass="app-light"
+          darkThemeClass="app-dark"
+          animationStyle="circle"
+        ></om-theme-toggle>
+        <i class="pi pi-bell" aria-hidden="true"></i>
+        <i class="pi pi-user" aria-hidden="true"></i>
+      </div>
+    </ng-template>
+  </p-toolbar>
+</header>

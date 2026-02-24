@@ -1,0 +1,21 @@
+:host {
+  display: block;
+}
+
+.brand {
+  margin-left: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.actions om-theme-toggle {
+  display: inline-flex;
+}
