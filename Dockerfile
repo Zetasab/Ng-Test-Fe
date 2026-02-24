@@ -14,7 +14,7 @@ WORKDIR /app
 
 RUN npm install -g serve@14
 
-COPY --from=builder /app/dist/ng-test-fe/browser ./dist
+COPY --from=builder /app/dist/Ng-Test-Fe/browser ./dist
 
 ENV NODE_ENV=production
 ENV PORT=8080
