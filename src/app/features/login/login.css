@@ -1,0 +1,92 @@
+:host {
+	display: block;
+	min-height: 100dvh;
+}
+
+.login-wrapper {
+	min-height: 100dvh;
+	display: grid;
+	place-items: center;
+	padding: 2rem;
+}
+
+.login-form {
+	display: grid;
+	gap: 1.25rem;
+	min-width: min(92vw, 28rem);
+}
+
+.field {
+	display: grid;
+	gap: 0.5rem;
+}
+
+.form-head {
+	display: grid;
+	gap: 0.25rem;
+	margin-bottom: 0.25rem;
+}
+
+.head-top {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.75rem;
+}
+
+.form-head h2 {
+	margin: 0;
+	font-size: 1.5rem;
+	line-height: 1.2;
+}
+
+:host ::ng-deep .theme-toggle.p-button {
+	padding: 0.55rem 0.9rem;
+	border: 1px solid var(--p-content-border-color);
+	background: var(--p-content-background);
+	box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.08);
+}
+
+.form-head p {
+	margin: 0;
+	opacity: 0.8;
+}
+
+.icon-field {
+	display: grid;
+	gap: 0.5rem;
+}
+
+.input-with-icon {
+	position: relative;
+}
+
+.field-icon {
+	position: absolute;
+	left: 0.9rem;
+	top: 50%;
+	transform: translateY(-50%);
+	z-index: 2;
+	font-size: 0.95rem;
+	opacity: 0.75;
+}
+
+input[pInputText] {
+	width: 100%;
+	height: 3rem;
+	padding-left: 2.4rem;
+}
+
+:host ::ng-deep .p-password,
+:host ::ng-deep .p-password input {
+	width: 100%;
+}
+
+:host ::ng-deep .p-password input {
+	height: 3rem;
+	padding-left: 2.4rem;
+}
+
+:host ::ng-deep .login-card {
+	width: min(92vw, 32rem);
+}

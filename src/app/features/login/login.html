@@ -1,0 +1,56 @@
+<section class="login-wrapper">
+	<p-card header="Iniciar sesión" styleClass="login-card">
+		<form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+			<div class="form-head">
+				<div class="head-top">
+					<h2>Bienvenido</h2>
+					<button
+						type="button"
+						pButton
+						class="theme-toggle"
+						[text]="true"
+						[rounded]="true"
+						(click)="toggleTheme()"
+						[icon]="isDarkMode() ? 'pi pi-sun' : 'pi pi-moon'"
+						[label]="isDarkMode() ? 'Light' : 'Dark'"
+					></button>
+				</div>
+				<p>Introduce tus credenciales para continuar</p>
+			</div>
+
+			@if (invalidCredentials()) {
+				<p-message severity="error" text="Credenciales inválidas. Usa admin/admin" />
+			}
+
+			<div class="field icon-field">
+				<label for="username">Username</label>
+				<div class="input-with-icon">
+					<i class="pi pi-user field-icon" aria-hidden="true"></i>
+					<input id="username" type="text" pInputText formControlName="username" autocomplete="username" />
+				</div>
+				@if (submitted() && loginForm.controls.username.invalid) {
+					<p-message severity="error" size="small" variant="simple" text="Username es obligatorio" />
+				}
+			</div>
+
+			<div class="field icon-field">
+				<label for="password">Password</label>
+				<div class="input-with-icon">
+					<i class="pi pi-lock field-icon" aria-hidden="true"></i>
+					<p-password
+						inputId="password"
+						formControlName="password"
+						autocomplete="current-password"
+						[feedback]="false"
+						[toggleMask]="true"
+					/>
+				</div>
+				@if (submitted() && loginForm.controls.password.invalid) {
+					<p-message severity="error" size="small" variant="simple" text="Password es obligatorio" />
+				}
+			</div>
+
+			<button type="submit" pButton label="Entrar" size="large" fluid></button>
+		</form>
+	</p-card>
+</section>

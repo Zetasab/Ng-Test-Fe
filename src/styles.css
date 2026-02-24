@@ -1,1 +1,30 @@
-/* You can add global styles to this file, and also import other style files */
+@import 'primeicons/primeicons.css';
+
+:root {
+	--app-bg: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+}
+
+.app-dark {
+	--app-bg: radial-gradient(circle at top, #1f2937 0%, #0b1220 55%, #030712 100%);
+}
+
+html,
+body {
+	margin: 0;
+	min-height: 100%;
+	font-family: 'Inter', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	background: var(--app-bg);
+	color: var(--p-text-color);
+	transition: background 0.25s ease, color 0.25s ease;
+}
+
+body {
+	line-height: 1.5;
+}
+
+app-root {
+	display: block;
+	min-height: 100dvh;
+}
