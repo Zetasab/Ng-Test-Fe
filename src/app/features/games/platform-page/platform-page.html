@@ -1,1 +1,223 @@
-<p>platform-page works!</p>
+<section class="platform-page">
+	<p-table
+		#dt
+		class="platform-grid"
+		dataKey="id"
+		[value]="platforms()"
+		[loading]="isGridLoading()"
+		[paginator]="true"
+		[rows]="10"
+		[rowsPerPageOptions]="[5, 10, 20]"
+		[globalFilterFields]="['name', 'manufacturer', 'releaseYear']"
+		[tableStyle]="{ 'min-width': '62rem' }"
+	>
+		<ng-template #caption>
+			<div class="table-caption">
+				<div class="caption-left">
+					<span class="p-input-icon-left">
+						<i class="pi pi-search" aria-hidden="true"></i>
+						<input
+							pInputText
+							type="text"
+							placeholder="Buscar platform"
+							(input)="onGlobalFilter(dt, $event)"
+							aria-label="Buscar platforms"
+						/>
+					</span>
+				</div>
+
+				<button
+					pButton
+					type="button"
+					icon="pi pi-plus"
+					label="Añadir"
+					(click)="openCreateDialog()"
+				></button>
+			</div>
+		</ng-template>
+
+		<ng-template #header>
+			<tr>
+				<th pSortableColumn="name">
+					Nombre
+					<p-sortIcon field="name"></p-sortIcon>
+					<p-columnFilter
+						type="text"
+						field="name"
+						display="menu"
+						matchMode="contains"
+						[showOperator]="false"
+						[showMatchModes]="false"
+						[showAddButton]="false"
+						[showApplyButton]="false"
+						[showClearButton]="true"
+						placeholder="Filtrar"
+					></p-columnFilter>
+				</th>
+				<th pSortableColumn="manufacturer">
+					Fabricante
+					<p-sortIcon field="manufacturer"></p-sortIcon>
+					<p-columnFilter
+						type="text"
+						field="manufacturer"
+						display="menu"
+						matchMode="contains"
+						[showOperator]="false"
+						[showMatchModes]="false"
+						[showAddButton]="false"
+						[showApplyButton]="false"
+						[showClearButton]="true"
+						placeholder="Filtrar"
+					></p-columnFilter>
+				</th>
+				<th pSortableColumn="releaseYear">
+					Año lanzamiento
+					<p-sortIcon field="releaseYear"></p-sortIcon>
+					<p-columnFilter
+						type="numeric"
+						field="releaseYear"
+						display="menu"
+						matchMode="equals"
+						[showOperator]="false"
+						[showMatchModes]="false"
+						[showAddButton]="false"
+						[showApplyButton]="false"
+						[showClearButton]="true"
+						placeholder="Filtrar"
+					></p-columnFilter>
+				</th>
+				<th class="actions-col">Acciones</th>
+			</tr>
+		</ng-template>
+
+		<ng-template #body let-platform>
+			<tr>
+				<td>{{ platform.name }}</td>
+				<td>{{ platform.manufacturer || '-' }}</td>
+				<td>{{ platform.releaseYear ?? '-' }}</td>
+				<td class="actions-cell">
+					<button
+						pButton
+						type="button"
+						icon="pi pi-pencil"
+						[text]="true"
+						[rounded]="true"
+						aria-label="Editar platform"
+						(click)="openEditDialog(platform)"
+					></button>
+					<button
+						pButton
+						type="button"
+						icon="pi pi-trash"
+						severity="danger"
+						[text]="true"
+						[rounded]="true"
+						aria-label="Borrar platform"
+						(click)="openDeleteDialog(platform)"
+					></button>
+				</td>
+			</tr>
+		</ng-template>
+
+		<ng-template #emptymessage>
+			<tr>
+				<td colspan="4" class="empty-message">No hay platforms disponibles.</td>
+			</tr>
+		</ng-template>
+	</p-table>
+</section>
+
+<p-dialog
+	[visible]="isPlatformDialogVisible()"
+	[modal]="true"
+	[draggable]="false"
+	[resizable]="false"
+	[dismissableMask]="!isSavePending()"
+	[closeOnEscape]="!isSavePending()"
+	[closable]="!isSavePending()"
+	[style]="{ width: '34rem' }"
+	[header]="platformDialogTitle()"
+	(onHide)="closePlatformDialog()"
+>
+	<form class="platform-form" [formGroup]="platformForm" (ngSubmit)="submitPlatform()">
+		<label for="platformName">Nombre</label>
+		<input id="platformName" pInputText formControlName="name" maxlength="120" />
+
+		@if (platformForm.controls.name.invalid && (platformForm.controls.name.touched || platformForm.controls.name.dirty)) {
+			<small class="field-error">El nombre es obligatorio.</small>
+		}
+
+		<label for="platformManufacturer">Fabricante</label>
+		<input id="platformManufacturer" pInputText formControlName="manufacturer" maxlength="120" />
+
+		<label for="platformReleaseYear">Año lanzamiento</label>
+		<p-datepicker
+			inputId="platformReleaseYear"
+			formControlName="releaseYear"
+			view="year"
+			dateFormat="yy"
+			[showIcon]="true"
+			[showButtonBar]="true"
+			appendTo="body"
+		></p-datepicker>
+
+		<div class="dialog-actions">
+			<button
+				pButton
+				type="button"
+				label="Cancelar"
+				[text]="true"
+				(click)="closePlatformDialog()"
+				[disabled]="isSavePending()"
+			></button>
+
+			<app-ladda-response-button
+				type="submit"
+				[state]="saveButtonState()"
+				[label]="isEditMode() ? 'Guardar cambios' : 'Crear platform'"
+				[loadingLabel]="isEditMode() ? 'Guardando...' : 'Creando...'"
+				[correctLabel]="isEditMode() ? 'Actualizado' : 'Creado'"
+				[wrongLabel]="'Error al guardar'"
+			></app-ladda-response-button>
+		</div>
+	</form>
+</p-dialog>
+
+<p-dialog
+	[visible]="isDeleteDialogVisible()"
+	header="Confirmar borrado"
+	[modal]="true"
+	[draggable]="false"
+	[resizable]="false"
+	[dismissableMask]="!isDeletePending()"
+	[closeOnEscape]="!isDeletePending()"
+	[closable]="!isDeletePending()"
+	[style]="{ width: '28rem' }"
+	(onHide)="closeDeleteDialog()"
+>
+	<p class="confirm-message">
+		¿Seguro que quieres borrar la platform
+		<strong>{{ deletingPlatform()?.name }}</strong>
+		?
+	</p>
+
+	<div class="dialog-actions">
+		<button
+			pButton
+			type="button"
+			label="Cancelar"
+			[text]="true"
+			(click)="closeDeleteDialog()"
+			[disabled]="isDeletePending()"
+		></button>
+
+		<app-ladda-response-button
+			[state]="deleteButtonState()"
+			label="Borrar"
+			loadingLabel="Borrando..."
+			correctLabel="Borrado"
+			wrongLabel="Error al borrar"
+			(pressed)="confirmDelete()"
+		></app-ladda-response-button>
+	</div>
+</p-dialog>
