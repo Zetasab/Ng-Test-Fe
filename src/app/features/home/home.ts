@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { NgxNumberTickerComponent } from '@omnedia/ngx-number-ticker';
 import { NgxParticlesComponent } from '@omnedia/ngx-particles';
 import { NgxThreeGlobeComponent } from '@omnedia/ngx-three-globe/browser';
@@ -27,6 +27,8 @@ type TestHighlight = {
   styleUrl: './home.css',
 })
 export class Home {
+  protected readonly isLoading = signal(true);
+
   protected readonly heroWords = ['Bienvenido a Test Home'];
 
   protected readonly testHighlights = signal<TestHighlight[]>(this.buildRandomHighlights());
@@ -48,6 +50,21 @@ export class Home {
   ]);
 
   protected readonly formatMetric = (value: number): string => Math.round(value).toLocaleString('es-ES');
+
+  private loadingTimerId: ReturnType<typeof setTimeout> | null = null;
+
+  public ngOnInit(): void {
+    this.loadingTimerId = setTimeout(() => {
+      this.isLoading.set(false);
+    }, 1200);
+  }
+
+  public ngOnDestroy(): void {
+    if (this.loadingTimerId) {
+      clearTimeout(this.loadingTimerId);
+      this.loadingTimerId = null;
+    }
+  }
 
   private buildRandomHighlights(): TestHighlight[] {
     return [

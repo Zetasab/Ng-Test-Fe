@@ -50,7 +50,7 @@
 	flex-direction: column;
 	justify-content: center;
 	gap: 0.9rem;
-    padding-left:50px;
+	padding-left: 0;
 }
 
 .kicker {
@@ -105,9 +105,7 @@ h1 {
 .hero-globe {
 	min-height: 290px;
 	border-radius: 1rem;
-	border: 1px solid var(--home-border);
 	overflow: hidden;
-	background: var(--home-surface-strong);
 }
 
 .stats {
@@ -169,6 +167,51 @@ h1 {
 .home-content {
 	position: relative;
 	z-index: 1;
+}
+
+.home-loading {
+	position: absolute;
+	inset: 0;
+	z-index: 3;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 0.4rem;
+	background: color-mix(in srgb, var(--p-surface-0) 82%, transparent);
+	backdrop-filter: blur(8px);
+}
+
+:host-context(.app-dark) .home-loading {
+	background: color-mix(in srgb, var(--p-surface-900) 76%, transparent);
+}
+
+.loading-spinner {
+	width: 2.4rem;
+	height: 2.4rem;
+	border-radius: 50%;
+	border: 3px solid color-mix(in srgb, var(--home-accent) 25%, transparent);
+	border-top-color: var(--home-accent);
+	animation: home-spin 0.9s linear infinite;
+}
+
+.loading-title {
+	margin: 0.2rem 0 0;
+	font-size: 1.03rem;
+	font-weight: 700;
+	color: var(--p-text-color);
+}
+
+.loading-subtitle {
+	margin: 0;
+	font-size: 0.88rem;
+	color: var(--home-text-muted);
+}
+
+@keyframes home-spin {
+	to {
+		transform: rotate(360deg);
+	}
 }
 
 :host ::ng-deep om-particles.home-particles .om-particles-background {
@@ -254,29 +297,77 @@ h1 {
 }
 
 @media (max-width: 960px) {
+	.home-page {
+		padding: 1.25rem 1rem 2rem;
+	}
+
 	.hero {
 		grid-template-columns: 1fr;
+		gap: 1rem;
+		padding: 1rem;
+	}
+
+	.hero-copy {
+		gap: 0.7rem;
+	}
+
+	.hero-globe {
+		min-height: 220px;
 	}
 
 	.stats {
 		grid-template-columns: repeat(2, minmax(120px, 1fr));
+		gap: 0.7rem;
 	}
 
 	.cards-grid {
 		grid-template-columns: repeat(2, minmax(200px, 1fr));
+		gap: 0.8rem;
 	}
 }
 
 @media (max-width: 640px) {
 	.home-page {
-		padding: 1.1rem 0.85rem 2rem;
+		padding: 1rem 0.75rem 1.5rem;
 	}
 
 	.hero {
-		padding: 1rem;
+		padding: 0.85rem;
+		border-radius: 0.95rem;
+	}
+
+	:host ::ng-deep .hero-typewriter {
+		font-size: clamp(1.35rem, 7vw, 1.8rem);
+	}
+
+	.hero-text {
+		font-size: 0.92rem;
+	}
+
+	.hero-globe {
+		min-height: 180px;
+		border-radius: 0.8rem;
+	}
+
+	.stats {
+		grid-template-columns: 1fr;
+		gap: 0.65rem;
+	}
+
+	.stat-card {
+		padding: 0.85rem 0.75rem;
+	}
+
+	:host ::ng-deep .metric-ticker {
+		font-size: clamp(1.5rem, 8vw, 2rem);
 	}
 
 	.cards-grid {
 		grid-template-columns: 1fr;
+		gap: 0.7rem;
+	}
+
+	.test-card {
+		padding: 0.85rem;
 	}
 }

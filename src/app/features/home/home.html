@@ -11,6 +11,14 @@
 		class="home-particles"
 	></om-particles>
 
+	@if (isLoading()) {
+		<section class="home-loading" aria-live="polite" aria-label="Cargando inicio">
+			<div class="loading-spinner" aria-hidden="true"></div>
+			<p class="loading-title">Cargando Home...</p>
+			<p class="loading-subtitle">Preparando módulos test y métricas</p>
+		</section>
+	} @else {
+
 	<div class="home-content">
 		<section class="hero" aria-labelledby="hero-title">
 			<div class="hero-copy">
@@ -31,7 +39,7 @@
 				</p>
 			</div>
 
-			<div class="" aria-hidden="true">
+			<div class="hero-globe" aria-hidden="true">
 				<om-three-globe></om-three-globe>
 			</div>
 		</section>
@@ -72,4 +80,5 @@
 			</div>
 		</section>
 	</div>
+	}
 </main>
