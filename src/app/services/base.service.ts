@@ -31,6 +31,20 @@ export class BaseService {
     );
   }
 
+  protected httpPut<TBody>(url: string, body: TBody): Observable<void> {
+    return this.httpClient.put<void>(url, body, { observe: 'response' }).pipe(
+      map((response) => this.extractBody(response, 'PUT', url)),
+      catchError((error) => this.handleHttpError(error, 'PUT', url)),
+    );
+  }
+
+  protected httpDelete(url: string): Observable<void> {
+    return this.httpClient.delete<void>(url, { observe: 'response' }).pipe(
+      map((response) => this.extractBody(response, 'DELETE', url)),
+      catchError((error) => this.handleHttpError(error, 'DELETE', url)),
+    );
+  }
+
   protected buildApiUrl(path: string): string {
     const normalizedPath = path.startsWith('/') ? path : `/${path}`;
     return `${this.apiBaseUrl}${normalizedPath}`;
