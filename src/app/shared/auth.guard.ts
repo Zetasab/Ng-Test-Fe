@@ -2,6 +2,7 @@ import { CanActivateFn, Router } from '@angular/router';
 import { inject } from '@angular/core';
 
 export const AUTH_SESSION_KEY = 'isAuthenticated';
+export const USER_SESSION_KEY = 'userResponse';
 
 export const authGuard: CanActivateFn = () => {
   const router = inject(Router);

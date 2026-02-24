@@ -6,8 +6,9 @@ import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { PasswordModule } from 'primeng/password';
-import { AUTH_SESSION_KEY } from '../../auth.guard';
-import { ThemeService } from '../../theme.service';
+import { AUTH_SESSION_KEY, USER_SESSION_KEY } from '../../shared/auth.guard';
+import { ThemeService } from '../../shared/theme.service';
+import { UserResponse, UserRole } from '../../../models/user-response.model';
 
 @Component({
   selector: 'app-login',
@@ -61,6 +62,13 @@ export class Login {
       return;
     }
 
+    const userResponse: UserResponse = {
+      username: credentials.username,
+      token: crypto.randomUUID(),
+      role: credentials.username === 'admin' ? UserRole.Admin : UserRole.User,
+    };
+
+    sessionStorage.setItem(USER_SESSION_KEY, JSON.stringify(userResponse));
     sessionStorage.setItem(AUTH_SESSION_KEY, 'true');
     void this.router.navigateByUrl('/');
   }
