@@ -11,10 +11,11 @@
         (click)="onToggleSidebar()"
       ></button>
 
-      <div class="brand">
-        <i class="pi pi-gamepad" aria-hidden="true"></i>
-        <span>Zeta Test</span>
-      </div>
+      <p-breadcrumb
+        [model]="breadcrumbItems"
+        [home]="breadcrumbHome"
+        styleClass="app-navbar-breadcrumb"
+      ></p-breadcrumb>
     </ng-template>
 
     <ng-template #end>
@@ -25,8 +26,14 @@
           darkThemeClass="app-dark"
           animationStyle="circle"
         ></om-theme-toggle>
-        <i class="pi pi-bell" aria-hidden="true"></i>
-        <i class="pi pi-user" aria-hidden="true"></i>
+        <button
+          pButton
+          type="button"
+          icon="pi pi-sign-out"
+          label="Logout"
+          severity="danger"
+          (click)="onLogout()"
+        ></button>
       </div>
     </ng-template>
   </p-toolbar>

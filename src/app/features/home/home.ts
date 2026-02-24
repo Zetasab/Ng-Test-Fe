@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { NgxNumberTickerComponent } from '@omnedia/ngx-number-ticker';
 import { NgxParticlesComponent } from '@omnedia/ngx-particles';
 import { NgxThreeGlobeComponent } from '@omnedia/ngx-three-globe/browser';
@@ -19,10 +20,20 @@ type TestHighlight = {
   label: string;
 };
 
+type FeaturePageLink = {
+  label: string;
+  path: string;
+};
+
+type FeatureGroup = {
+  folder: string;
+  pages: FeaturePageLink[];
+};
+
 @Component({
   selector: 'app-home',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgxThreeGlobeComponent, NgxNumberTickerComponent, NgxParticlesComponent, NgxTypewriterComponent],
+  imports: [NgxThreeGlobeComponent, NgxNumberTickerComponent, NgxParticlesComponent, NgxTypewriterComponent, RouterLink],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
@@ -47,6 +58,25 @@ export class Home {
     'Test Revisar Estado',
     'Test Publicar Demo',
     'Test Compartir Reporte',
+  ]);
+
+  protected readonly featureGroups = signal<FeatureGroup[]>([
+    {
+      folder: 'home',
+      pages: [{ label: 'Home', path: '/' }],
+    },
+    {
+      folder: 'games',
+      pages: [
+        { label: 'Developer Page', path: '/games/developer' },
+        { label: 'Game Page', path: '/games/game' },
+        { label: 'Game Search Page', path: '/games/gamesearch' },
+        { label: 'Genre Page', path: '/games/genre' },
+        { label: 'Platform Page', path: '/games/platform' },
+        { label: 'Review Page', path: '/games/review' },
+        { label: 'Tag Page', path: '/games/tag' },
+      ],
+    },
   ]);
 
   protected readonly formatMetric = (value: number): string => Math.round(value).toLocaleString('es-ES');

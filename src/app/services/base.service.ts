@@ -1,0 +1,62 @@
+import { inject, Injectable } from '@angular/core';
+import { HttpClient, HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { catchError, map, Observable, throwError } from 'rxjs';
+import { environment } from '../../environments/environment';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class BaseService {
+  protected readonly httpClient = inject(HttpClient);
+  private readonly apiBaseUrl = environment.apiBaseUrl.replace(/\/+$/, '');
+
+  protected httpGet<T>(url: string): Observable<T> {
+    return this.httpClient.get<T>(url, { observe: 'response' }).pipe(
+      map((response) => this.extractBody(response, 'GET', url)),
+      catchError((error) => this.handleHttpError(error, 'GET', url)),
+    );
+  }
+
+  protected httpGetText(url: string): Observable<string> {
+    return this.httpClient.get(url, { observe: 'response', responseType: 'text' }).pipe(
+      map((response) => this.extractTextBody(response, 'GET', url)),
+      catchError((error) => this.handleHttpError(error, 'GET', url)),
+    );
+  }
+
+  protected httpPost<TResponse>(url: string, body: unknown): Observable<TResponse> {
+    return this.httpClient.post<TResponse>(url, body, { observe: 'response' }).pipe(
+      map((response) => this.extractBody(response, 'POST', url)),
+      catchError((error) => this.handleHttpError(error, 'POST', url)),
+    );
+  }
+
+  protected buildApiUrl(path: string): string {
+    const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+    return `${this.apiBaseUrl}${normalizedPath}`;
+  }
+
+  private extractBody<T>(response: HttpResponse<T>, method: string, url: string): T {
+    this.logIfNot200(response.status, method, url);
+    return response.body as T;
+  }
+
+  private extractTextBody(response: HttpResponse<string>, method: string, url: string): string {
+    this.logIfNot200(response.status, method, url);
+    return response.body ?? '';
+  }
+
+  private handleHttpError(error: unknown, method: string, url: string): Observable<never> {
+    if (error instanceof HttpErrorResponse) {
+      this.logIfNot200(error.status, method, url);
+    }
+
+    return throwError(() => error);
+  }
+
+  private logIfNot200(status: number, method: string, url: string): void {
+    if (status !== 200) {
+      console.error(`[HTTP ${method}] ${url} returned status ${status}`);
+    }
+  }
+}

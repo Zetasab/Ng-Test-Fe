@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
@@ -8,7 +10,8 @@ import { MessageModule } from 'primeng/message';
 import { PasswordModule } from 'primeng/password';
 import { AUTH_SESSION_KEY, USER_SESSION_KEY } from '../../shared/auth.guard';
 import { ThemeService } from '../../shared/theme.service';
-import { UserResponse, UserRole } from '../../../models/user-response.model';
+import { AuthService } from '../../services/auth.service';
+import { InfoService } from '../../services/info.service';
 
 @Component({
   selector: 'app-login',
@@ -28,6 +31,8 @@ export class Login {
   private readonly formBuilder = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly themeService = inject(ThemeService);
+  private readonly authService = inject(AuthService);
+  private readonly infoService = inject(InfoService);
   protected readonly submitted = signal(false);
   protected readonly invalidCredentials = signal(false);
   protected readonly isDarkMode = this.themeService.isDarkMode;
@@ -44,7 +49,7 @@ export class Login {
     }
   }
 
-  protected onSubmit(): void {
+  protected async onSubmit(): Promise<void> {
     this.submitted.set(true);
     this.invalidCredentials.set(false);
 
@@ -54,23 +59,27 @@ export class Login {
     }
 
     const credentials = this.loginForm.getRawValue();
-    const isValidLogin =
-      credentials.username === 'admin' && credentials.password === 'admin';
 
-    if (!isValidLogin) {
-      this.invalidCredentials.set(true);
-      return;
+    try {
+      const info = await firstValueFrom(this.infoService.get());
+      console.log('getInfo response:', info);
+    } catch (error: unknown) {
+      console.error('Error calling getInfo:', error);
     }
 
-    const userResponse: UserResponse = {
-      username: credentials.username,
-      token: crypto.randomUUID(),
-      role: credentials.username === 'admin' ? UserRole.Admin : UserRole.User,
-    };
+    try {
+      const userResponse = await firstValueFrom(this.authService.login(credentials));
+      sessionStorage.setItem(USER_SESSION_KEY, JSON.stringify(userResponse));
+      sessionStorage.setItem(AUTH_SESSION_KEY, 'true');
+      await this.router.navigateByUrl('/');
+    } catch (error: unknown) {
+      if (error instanceof HttpErrorResponse && error.status === 401) {
+        this.invalidCredentials.set(true);
+        return;
+      }
 
-    sessionStorage.setItem(USER_SESSION_KEY, JSON.stringify(userResponse));
-    sessionStorage.setItem(AUTH_SESSION_KEY, 'true');
-    void this.router.navigateByUrl('/');
+      this.invalidCredentials.set(true);
+    }
   }
 
   protected toggleTheme(): void {

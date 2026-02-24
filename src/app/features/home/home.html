@@ -69,14 +69,18 @@
 			</div>
 
 			<div class="cards-grid">
-				@for (card of featuredTestCards(); track card.id) {
-					<article class="test-card">
-						<span class="badge">{{ card.badge }}</span>
-						<h3>{{ card.title }}</h3>
-						<p>{{ card.subtitle }}</p>
-						<button type="button" class="card-link">Ver Test</button>
-					</article>
-				}
+				<article class="feature-links-card" aria-label="Enlaces de páginas por carpeta">
+					@for (group of featureGroups(); track group.folder) {
+						<section class="feature-group">
+							<h3>{{ group.folder }}</h3>
+							<div class="feature-links-list">
+								@for (page of group.pages; track page.path) {
+									<a class="feature-link" [routerLink]="page.path">{{ page.label }}</a>
+								}
+							</div>
+						</section>
+					}
+				</article>
 			</div>
 		</section>
 	</div>
