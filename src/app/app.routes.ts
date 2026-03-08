@@ -54,6 +54,11 @@ export const routes: Routes = [
 				canActivate: [adminGuard],
 				loadComponent: () => import('./features/users/user-page/user-page').then((m) => m.UserPage),
 			},
+			{
+				path: 'audit',
+				canActivate: [adminGuard],
+				loadComponent: () => import('./features/audit/audit-page/audit-page').then((m) => m.AuditPage),
+			},
 		],
 	},
 	{

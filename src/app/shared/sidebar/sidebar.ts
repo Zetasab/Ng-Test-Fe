@@ -65,6 +65,11 @@ export class Sidebar {
       icon: 'pi pi-users',
       routerLink: '/users',
     },
+    {
+      label: 'Audit',
+      icon: 'pi pi-history',
+      routerLink: '/audit',
+    },
   ]);
 
   private filterMenuItems(items: readonly MenuItem[]): MenuItem[] {
