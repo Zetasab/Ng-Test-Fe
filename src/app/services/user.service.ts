@@ -18,7 +18,12 @@ export class UserService extends BaseService {
   }
 
   insert(model: UserModel): Observable<UserModel> {
-    return this.httpPost<UserModel>(this.endpoint, model);
+    const payload: UserModel = {
+      ...model,
+      id: model.id?.trim() ? model.id : crypto.randomUUID(),
+    };
+
+    return this.httpPost<UserModel>(this.endpoint, payload);
   }
 
   update(id: string, model: UserModel): Observable<void> {

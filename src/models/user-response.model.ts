@@ -1,6 +1,6 @@
 export enum UserRole {
-  User = 'User',
-  Admin = 'Admin',
+  User = 0,
+  Admin = 1,
 }
 
 export class UserResponse {

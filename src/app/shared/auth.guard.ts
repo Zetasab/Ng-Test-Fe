@@ -117,12 +117,12 @@ function normalizePermissionSource(source: unknown): string[] {
 
 function isAdminRoleValue(role: unknown): boolean {
   if (typeof role === 'number') {
-    return role === 1;
+    return role === UserRole.Admin;
   }
 
   if (typeof role === 'string') {
     const normalizedRole = role.trim().toLowerCase();
-    return normalizedRole === UserRole.Admin.toLowerCase() || normalizedRole === '1';
+    return normalizedRole === 'admin' || normalizedRole === `${UserRole.Admin}`;
   }
 
   if (isObjectLike(role)) {

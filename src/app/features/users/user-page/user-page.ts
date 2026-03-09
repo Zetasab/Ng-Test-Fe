@@ -131,8 +131,7 @@ export class UserPage {
       const model = new UserModel();
       model.username = this.userForm.controls.username.value.trim();
       model.passwordHash = this.userForm.controls.passwordHash.value.trim();
-      model.token = this.userForm.controls.token.value.trim();
-      model.role = this.userForm.controls.role.value;
+      model.role = Number(this.userForm.controls.role.value) as UserRole;
       model.isActive = this.userForm.controls.isActive.value;
 
       if (this.isEditMode()) {
