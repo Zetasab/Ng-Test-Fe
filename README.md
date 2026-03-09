@@ -1,59 +1,129 @@
-# NgTestFe
+# Ng-Test-Fe
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.2.
+![Angular](https://img.shields.io/badge/Angular-21-red)
+![Estado](https://img.shields.io/badge/Estado-Aprendizaje-blue)
+![Licencia](https://img.shields.io/badge/Licencia-Uso%20interno-lightgrey)
 
-## Development server
+> Proyecto de prueba en Angular para aprender, practicar y experimentar.
+> **No es el proyecto que uso profesionalmente en produccion.**
 
-To start a local development server, run:
+---
 
-```bash
-ng serve
-```
+## Resumen rapido
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+`Ng-Test-Fe` es una aplicacion frontend construida con Angular 21, enfocada en practicar:
 
-## Code scaffolding
+- autenticacion y control de acceso por roles;
+- rutas protegidas con guards;
+- estructura modular por features;
+- consumo de API con servicios reutilizables;
+- componentes UI con PrimeNG y librerias visuales.
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Stack principal
 
-```bash
-ng generate component component-name
-```
+| Tecnologia | Uso en el proyecto |
+| --- | --- |
+| Angular 21 | Estructura principal de la app |
+| Angular Router | Navegacion, rutas protegidas y lazy loading |
+| HttpClient | Comunicacion con backend |
+| PrimeNG + PrimeIcons | Componentes visuales |
+| Vitest | Pruebas unitarias |
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Como ejecutar el proyecto
 
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+### 1. Instalar dependencias
 
 ```bash
-ng test
+npm install
 ```
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+### 2. Levantar entorno de desarrollo
 
 ```bash
-ng e2e
+npm start
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+Abre `http://localhost:4200` en el navegador.
 
-## Additional Resources
+### 3. Comandos utiles
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+```bash
+npm run build    # Build de produccion
+npm run watch    # Build en modo watch (development)
+npm test         # Ejecutar pruebas unitarias
+```
+
+## Como funciona el proyecto
+
+### 1) Flujo de navegacion y acceso
+
+El enrutador define dos zonas principales:
+
+- `/login`: pantalla publica de acceso.
+- `''` (layout principal): zona protegida por `authGuard`.
+
+Dentro de la zona protegida:
+
+- todos los usuarios autenticados pueden entrar a `home` y varias vistas de juegos;
+- vistas administrativas (`users`, `audit`, `games/developer`, `games/genre`, `games/platform`, `games/review`, `games/tag`) requieren `adminGuard`.
+
+Si una ruta no existe, redirige a la raiz.
+
+```mermaid
+flowchart LR
+	A[Usuario entra] --> B{Sesion activa?}
+	B -- No --> C[/login]
+	B -- Si --> D[LayoutShell]
+	D --> E[Home y vistas de juegos]
+	D --> F{Ruta admin?}
+	F -- Si y es admin --> G[Users / Audit / Catalogos]
+	F -- No admin --> H[Redireccion a /]
+```
+
+### 2) Autenticacion y permisos
+
+La sesion se gestiona en `sessionStorage`:
+
+- `isAuthenticated`: estado de autenticacion;
+- `userResponse`: datos del usuario autenticado (incluye token y rol/permisos).
+
+Los guards validan estos datos para:
+
+- permitir o bloquear la navegacion;
+- redirigir a `/login` si no hay sesion;
+- redirigir a `/` si el usuario no tiene rol de admin en rutas administrativas.
+
+### 3) Consumo de API
+
+`BaseService` centraliza el acceso HTTP:
+
+- construye URLs con `environment.apiBaseUrl`;
+- agrega el header `Authorization: Bearer <token>` cuando existe token en sesion;
+- encapsula metodos `GET`, `POST`, `PUT`, `DELETE`;
+- registra errores HTTP cuando el estado es distinto de `200`.
+
+Servicios especificos (por ejemplo `AuthService`) heredan de `BaseService` para mantener un estilo uniforme.
+
+### 4) Organizacion del codigo
+
+Estructura general:
+
+- `src/app/features/`: paginas por dominio (`home`, `login`, `games`, `users`, `audit`).
+- `src/app/services/`: servicios de negocio y acceso a API.
+- `src/app/shared/`: guards, layout, navbar/sidebar y utilidades compartidas.
+- `src/models/`: modelos tipados usados por la aplicacion.
+
+Ademas, el `App` raiz inicializa el tema visual mediante `ThemeService` al arrancar.
+
+## Notas importantes
+
+- Este repo esta pensado para aprendizaje y pruebas tecnicas.
+- Puede incluir decisiones de codigo simplificadas para experimentar mas rapido.
+- No representa necesariamente estandares finales de un entorno productivo.
+
+---
+
+## Referencias
+
+- Angular CLI: https://angular.dev/tools/cli
+- Angular Docs: https://angular.dev
